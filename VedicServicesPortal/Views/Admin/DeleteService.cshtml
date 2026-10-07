@@ -1,0 +1,114 @@
+@model VedicServicesPortal.Models.Service
+
+@{
+    ViewData["Title"] = "Delete Service";
+    var bookingCount = (int)(ViewBag.BookingCount ?? 0);
+    var canDelete = (bookingCount == 0);
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+
+            <!-- BREADCRUMB / BACK LINK -->
+            <div class="mb-3">
+                <a asp-controller="Admin" asp-action="Services" class="text-decoration-none text-muted small fw-semibold">
+                    ← Back to Services Directory
+                </a>
+            </div>
+
+            <!-- CARD -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border: 1px solid #f2e3cf !important;">
+                
+                <div class="card-header text-center py-4 border-bottom" style="background: linear-gradient(135deg, #fff5f5 0%, #fee2e2 100%);">
+                    <div class="fs-1 mb-2">🗑️</div>
+                    <h3 class="fw-bold mb-1 text-danger" style="font-family: 'Cinzel', serif;">
+                        Confirm Service Removal
+                    </h3>
+                    <p class="text-muted small mb-0">
+                        Review the ritual offering before removing it from the portal database.
+                    </p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- SERVICE INFO SUMMARY -->
+                    <div class="p-3 rounded-4 mb-4" style="background: #faf7f2; border: 1px solid #eedec7;">
+                        <h5 class="fw-bold text-dark mb-1">@Model.ServiceName</h5>
+                        <p class="text-muted small mb-3">@Model.Description</p>
+
+                        <hr class="my-2" style="border-color: #e5d5be;" />
+
+                        <div class="row g-2 small">
+                            <div class="col-sm-4 text-muted">Price:</div>
+                            <div class="col-sm-8 fw-semibold text-dark">₹@Model.Price.ToString("N0")</div>
+
+                            <div class="col-sm-4 text-muted">Duration:</div>
+                            <div class="col-sm-8 fw-semibold text-dark">@Model.Duration Hours</div>
+
+                            <div class="col-sm-4 text-muted">Active Bookings:</div>
+                            <div class="col-sm-8">
+                                @if (bookingCount > 0)
+                                {
+                                    <span class="badge bg-warning text-dark px-2 py-1 rounded-pill fw-semibold">
+                                        ⚠️ @bookingCount Booking Record(s) Found
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-success fw-semibold">✓ None (Clean to delete)</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WARNING BLOCKS -->
+                    @if (bookingCount > 0)
+                    {
+                        <div class="alert alert-warning rounded-3 d-flex align-items-center mb-4">
+                            <span class="fs-4 me-2">⚠️</span>
+                            <div class="small">
+                                <strong>Database Integrity Guard:</strong> This service cannot be deleted because it is referenced in <strong>@bookingCount booking record(s)</strong>. To hide this ritual from the public catalog, edit it and toggle it to <strong>Inactive</strong>.
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger rounded-3 d-flex align-items-center mb-4" style="background: #fdf5f5; border-color: #f8d7da; color: #721c24;">
+                            <span class="fs-4 me-2">⚠️</span>
+                            <div class="small">
+                                <strong>Warning:</strong> Are you sure you want to permanently remove <strong>@Model.ServiceName</strong>? This action cannot be undone.
+                            </div>
+                        </div>
+                    }
+
+                    <!-- FORM -->
+                    <form asp-action="DeleteService" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.ServiceId" />
+
+                        <div class="d-flex gap-3 pt-2">
+                            @if (canDelete)
+                            {
+                                <button type="submit" class="btn btn-danger flex-grow-1 py-2 rounded-pill fw-semibold shadow-sm">
+                                    🗑️ Yes, Delete Service
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-secondary flex-grow-1 py-2 rounded-pill fw-semibold opacity-50" disabled>
+                                    🔒 Deletion Blocked
+                                </button>
+                            }
+                            <a asp-action="Services" class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

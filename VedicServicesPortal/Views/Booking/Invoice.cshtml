@@ -1,0 +1,402 @@
+@model VedicServicesPortal.Models.Booking
+
+@{
+    ViewData["Title"] = $"Sacred Invoice #INV-VEDA-{Model.BookingId}";
+    Layout = "_Layout";
+}
+
+<div class="container py-4" style="max-width: 920px;">
+
+    <!-- NON-PRINTABLE TOP TOOLBAR -->
+    <div class="d-print-none d-flex flex-wrap justify-content-between align-items-center mb-4 p-3 bg-white rounded-4 shadow-sm border border-sacred">
+        <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">📜</span>
+            <div>
+                <h5 class="mb-0 fw-bold font-serif text-deep-maroon">Official Vedic Ceremony Invoice</h5>
+                <small class="text-muted-sacred">Booking Reference: #VEDA-@Model.BookingId</small>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn-stitch-primary py-2 px-3 small d-inline-flex align-items-center gap-2" onclick="window.print()">
+                <span>🖨️</span>
+                <span>Print Invoice</span>
+            </button>
+            <button type="button" class="btn btn-outline-success py-2 px-3 small fw-bold d-inline-flex align-items-center gap-2 rounded-pill shadow-xs" id="downloadPdfBtn" onclick="downloadInvoicePdf()">
+                <span>⬇️</span>
+                <span>Download PDF</span>
+            </button>
+            <a asp-controller="Booking" asp-action="MyBookings" class="btn-stitch-outline py-2 px-3 small text-decoration-none">
+                ← My Bookings
+            </a>
+        </div>
+    </div>
+
+    <!-- PRINTABLE INVOICE SHEET (ID: invoicePrintArea) -->
+    <div id="invoicePrintArea" class="bg-white rounded-4 shadow-sm p-4 border border-sacred position-relative overflow-hidden mb-4" style="max-width: 840px; margin: 0 auto;">
+        
+        <!-- Sacred Watermark -->
+        <div class="mandala-watermark position-absolute w-100 h-100" style="inset: 0; opacity: 0.04; pointer-events: none;"></div>
+
+@{
+    var invoiceSettings = SiteSettingsService.GetSettings();
+    ViewData["Title"] = $"Invoice #{Model.BookingId} - {invoiceSettings.BrandName}";
+}
+
+        <!-- HEADER SECTION -->
+        <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3" style="border-color: #dfbfbc !important;">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="fs-3 text-deep-maroon font-serif fw-bold">@(invoiceSettings.BrandLogoOm ?? "ॐ")</span>
+                    <h2 class="fs-5 fw-bold font-serif text-deep-maroon mb-0">@(invoiceSettings.BrandName)</h2>
+                </div>
+                <p class="small text-muted-sacred mb-1" style="font-size: 11.5px;">@(invoiceSettings.BrandTagline)</p>
+                <div class="small text-muted-sacred" style="font-size: 10.5px; line-height: 1.4;">
+                    📍 <strong>Sanctum Office:</strong> @(invoiceSettings.ContactAddress)<br />
+                    📞 <strong>Helpline:</strong> @(invoiceSettings.ContactPhone) &bull; ✉️ <strong>Email:</strong> @(invoiceSettings.ContactEmail)
+                </div>
+            </div>
+
+            <div class="text-end">
+                <span class="badge bg-sacred-container text-deep-maroon border border-sacred px-2.5 py-1 font-serif fw-bold mb-1.5 d-inline-block" style="font-size: 11px;">
+                    DAKSHINA INVOICE
+                </span>
+                <div class="small text-muted-sacred" style="font-size: 11px; line-height: 1.4;">
+                    <p class="mb-0"><strong>Invoice No:</strong> <span class="text-dark font-monospace fw-bold">#INV-VEDA-@Model.BookingId</span></p>
+                    <p class="mb-0"><strong>Date of Issue:</strong> @Model.CreatedAt.ToString("dd MMMM yyyy")</p>
+                    <p class="mb-0">
+                        <strong>Status:</strong>
+                        <span class="badge rounded-pill px-2 py-0.5 @(Model.Status == "Confirmed" || Model.Status == "Completed" ? "bg-success text-white" : "bg-warning text-dark")" style="font-size: 9.5px;">
+                            @Model.Status
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-COLUMN YAJMAN (CUSTOMER) & ACHARYA DETAILS -->
+        <div class="row g-3 mb-3 pb-2 border-bottom" style="border-color: #f1dfd5 !important;">
+            <!-- DEVOTEE / YAJMAN -->
+            <div class="col-6">
+                <div class="p-2.5 px-3 rounded-3 bg-sacred-low border border-sacred h-100">
+                    <div class="d-flex align-items-center gap-1.5 mb-1.5">
+                        <span class="text-saffron" style="font-size: 13px;">👤</span>
+                        <h6 class="fw-bold font-serif text-deep-maroon mb-0" style="font-size: 12.5px;">Yajman (Devotee) Information</h6>
+                    </div>
+                    <div class="small text-muted-sacred" style="font-size: 11px; line-height: 1.4;">
+                        <p class="mb-0.5"><strong class="text-dark">Devotee Name:</strong> @(Model.User?.Name ?? "Devotee")</p>
+                        @if (!string.IsNullOrEmpty(Model.User?.Username))
+                        {
+                            <p class="mb-0.5"><strong class="text-dark">Username:</strong> @@Model.User.Username</p>
+                        }
+                        <p class="mb-0.5"><strong class="text-dark">Email:</strong> @(Model.User?.Email ?? "N/A")</p>
+                        <p class="mb-0"><strong class="text-dark">Ceremony Venue:</strong> @Model.Address</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRESIDING ACHARYA & SCHEDULE -->
+            <div class="col-6">
+                <div class="p-2.5 px-3 rounded-3 bg-sacred-low border border-sacred h-100">
+                    <div class="d-flex align-items-center gap-1.5 mb-1.5">
+                        <span class="text-saffron" style="font-size: 13px;">🧘</span>
+                        <h6 class="fw-bold font-serif text-deep-maroon mb-0" style="font-size: 12.5px;">Assigned Acharya &amp; Muhurat</h6>
+                    </div>
+                    <div class="small text-muted-sacred" style="font-size: 11px; line-height: 1.4;">
+                        <p class="mb-0.5"><strong class="text-dark">Vedic Pandit:</strong> @(Model.Pandit?.Name ?? "Certified Vedic Acharya")</p>
+                        <p class="mb-0.5"><strong class="text-dark">Specialization:</strong> @(Model.Pandit?.Specialization ?? "Vedic Rituals & Havans")</p>
+                        <p class="mb-0.5"><strong class="text-dark">Pandit Mobile:</strong> @(Model.Pandit?.Mobile ?? "+91 8780495951")</p>
+                        <p class="mb-0">
+                            <strong class="text-dark">Schedule:</strong>
+                            <span class="text-deep-maroon fw-bold">
+                                @(Model.TimeSlot?.Date.ToString("dd-MM-yyyy") ?? Model.BookingDate.ToString("dd-MM-yyyy"))
+                                (@(Model.TimeSlot != null ? $"{Model.TimeSlot.StartTime} - {Model.TimeSlot.EndTime}" : "Auspicious Morning Slot"))
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LINE ITEMS TABLE -->
+        <div class="mb-3">
+            <table class="table table-bordered align-middle mb-0" style="border-color: #dfbfbc;">
+                <thead style="background: #faf2ea; color: #591b1f; font-family: 'Cinzel', serif; font-size: 11px; text-transform: uppercase;">
+                    <tr>
+                        <th class="py-2 px-3" style="width: 55%;">Ceremony &amp; Sacred Inclusions</th>
+                        <th class="py-2 px-3 text-center" style="width: 15%;">Duration</th>
+                        <th class="py-2 px-3 text-center" style="width: 15%;">Samagri Kit</th>
+                        <th class="py-2 px-3 text-end" style="width: 15%;">Dakshina (₹)</th>
+                    </tr>
+                </thead>
+                <tbody class="small" style="font-size: 11px;">
+                    <tr>
+                        <td class="py-2 px-3">
+                            <div class="fw-bold text-deep-maroon font-serif mb-0.5" style="font-size: 12.5px;">
+                                🪔 @(Model.Service?.ServiceName ?? "Sacred Ceremony")
+                            </div>
+                            <p class="text-muted-sacred mb-0" style="font-size: 10.5px; line-height: 1.35;">
+                                @(Model.Service?.Description ?? "Complete Shastric Vidhi, Mantra Chanting, Sankalp, and Havan ritual.")
+                            </p>
+                        </td>
+                        <td class="py-2 px-3 text-center text-muted-sacred">
+                            @(Model.Service?.Duration ?? 2) Hours
+                        </td>
+                        <td class="py-2 px-3 text-center">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold" style="font-size: 9.5px;">
+                                ✓ 100% Included
+                            </span>
+                        </td>
+                        <td class="py-2 px-3 text-end fw-bold font-serif text-dark" style="font-size: 13px;">
+                            ₹@Model.TotalAmount.ToString("N0")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="py-1.5 px-3 text-muted-sacred" style="font-size: 10px; line-height: 1.3;">
+                            <strong>🌺 Consecrated Samagri Kit Details:</strong> Pure Desi Cow Ghee, Navgraha Samidha wood, Sacred Kusha grass, Gangajal, Kumkum, Haldi, Akshat, Dhoop, and Consecrated Kalash items brought directly by the Acharya.
+                        </td>
+                        <td class="py-1.5 px-3 text-end text-success fw-bold" style="font-size: 10px;">
+                            INCLUDED
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold font-serif text-dark py-2 px-3" style="background: #fffcf8; font-size: 12px;">
+                            Total Consecration Dakshina:
+                        </td>
+                        <td class="text-end fw-bold font-serif text-deep-maroon py-2 px-3" style="background: #fffcf8; font-size: 14px;">
+                            ₹@Model.TotalAmount.ToString("N0")
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- PAYMENT METHOD & SETTLEMENT INFO -->
+        <div class="row g-2 align-items-center mb-3 p-2 px-3 rounded-3 bg-sacred-low border border-sacred">
+            <div class="col-8">
+                <div class="small" style="font-size: 11px;">
+                    <span class="fw-bold text-dark d-block mb-0.5">
+                        Settlement Mode:
+                        <span class="text-deep-maroon">
+                            @(Model.PaymentMethod == "UPI" ? "📱 UPI with Dynamic QR Code" : Model.PaymentMethod == "Card" ? "💳 Debit / Credit Card" : "🪔 Cash on Completion (In-Person)")
+                        </span>
+                    </span>
+                    <span class="text-muted-sacred" style="font-size: 10px; line-height: 1.3; display: block;">
+                        @(Model.PaymentMethod == "UPI" || Model.PaymentMethod == "Card" 
+                            ? "Dakshina has been settled digitally through authentic payment confirmation." 
+                            : "Sacred Dakshina to be offered directly in cash to the Purohit upon completion of the ceremony vidhi.")
+                    </span>
+                </div>
+            </div>
+            <div class="col-4 text-end">
+                <span class="badge px-2.5 py-1.5 bg-success text-white fw-bold shadow-xs" style="font-size: 9.5px;">
+                    ✓ SANCTIFIED SANKALP CONFIRMED
+                </span>
+            </div>
+        </div>
+
+        <!-- AUTHENTICITY STAMP & SIGNATURE BLOCK -->
+        <div class="d-flex justify-content-between align-items-end pt-2 mt-3 border-top" style="border-color: #dfbfbc !important;">
+            <div>
+                <!-- Digital Seal -->
+                <div class="d-inline-flex align-items-center gap-2 p-1.5 px-2 rounded-2 border border-sacred bg-sacred-low" style="font-size: 9.5px;">
+                    <span class="fs-5">🛡️</span>
+                    <div>
+                        <strong class="text-deep-maroon d-block">CONSECRATED VEDIC SANCTUM</strong>
+                        <span class="text-muted">Ramnagar, Jam-khambhalya • Official Seal</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end" style="min-width: 200px;">
+                <div class="font-serif text-deep-maroon fw-bold mb-0.5" style="font-size: 14px; font-style: italic;">
+                    Acharya Vidyadhar Shukla
+                </div>
+                <div class="border-top border-dark pt-0.5 small text-muted-sacred" style="font-size: 9.5px; line-height: 1.25;">
+                    Authorized Acharya Signatory<br />
+                    @(invoiceSettings.BrandName) Seva Trust
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER NOTE -->
+        <div class="text-center text-muted-sacred pt-2 mt-2 border-top" style="font-size: 9.5px; border-color: #f1dfd5 !important;">
+            This is a computer-generated sacred Dakshina invoice and Sankalp confirmation receipt issued strictly according to Vedic Shastras.
+        </div>
+
+    </div>
+
+</div>
+
+<!-- HTML2CANVAS & JSPDF FOR ACCURATE FULL-WIDTH SINGLE-PAGE PDF EXPORT -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+    /* STRICT SINGLE-PAGE PRINT STYLESHEET */
+    @@page {
+        size: A4 portrait;
+        margin: 6mm 8mm;
+    }
+
+    @@media print {
+        /* Hide entire web UI chrome */
+        header, footer, nav, .d-print-none, #aiChatbotContainer, .stitch-modal-overlay, #panchangModal, .navbar {
+            display: none !important;
+        }
+
+        html, body {
+            width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #invoicePrintArea {
+            box-shadow: none !important;
+            border: 1.5px solid #dfbfbc !important;
+            border-radius: 6px !important;
+            padding: 16px 20px !important;
+            margin: 0 auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+        }
+
+        #invoicePrintArea * {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+    }
+</style>
+
+<script>
+    async function downloadInvoicePdf() {
+        const btn = document.getElementById('downloadPdfBtn');
+        const invoiceEl = document.getElementById('invoicePrintArea');
+        if (!invoiceEl) return;
+
+        if (btn) {
+            btn.innerHTML = '<span>⏳</span><span>Generating 1-Page PDF...</span>';
+            btn.disabled = true;
+        }
+
+        try {
+            // Check if libraries are loaded
+            if (typeof html2canvas === 'undefined' || (typeof jspdf === 'undefined' && typeof jsPDF === 'undefined')) {
+                throw new Error('PDF generation libraries still loading. Using native print as fallback.');
+            }
+
+            // Clone element to an off-screen fixed-width container (794px = A4 210mm at 96 DPI)
+            // This completely eliminates any margin cropping, left-side cutoff, or screen resolution distortion
+            const clone = invoiceEl.cloneNode(true);
+            clone.id = 'invoicePdfClone';
+            clone.style.width = '794px';
+            clone.style.maxWidth = '794px';
+            clone.style.minWidth = '794px';
+            clone.style.margin = '0';
+            clone.style.padding = '22px 28px';
+            clone.style.boxSizing = 'border-box';
+            clone.style.background = '#ffffff';
+            clone.style.position = 'fixed';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            clone.style.zIndex = '-9999';
+            clone.style.boxShadow = 'none';
+            document.body.appendChild(clone);
+
+            // Capture the clone at scale 2 (retina 192 DPI crispness)
+            const canvas = await html2canvas(clone, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                scrollX: 0,
+                scrollY: 0
+            });
+
+            // Remove clone immediately from DOM
+            document.body.removeChild(clone);
+
+            // Initialize jsPDF A4 portrait
+            const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || jsPDF);
+            const pdf = new jsPDFClass({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+                compress: true
+            });
+
+            const pageWidth = 210;  // A4 standard width in mm
+            const pageHeight = 297; // A4 standard height in mm
+            const margin = 8;       // 8mm outer margin
+
+            const printableWidth = pageWidth - (margin * 2);   // 194 mm
+            const printableHeight = pageHeight - (margin * 2); // 281 mm
+
+            // Calculate proportional dimensions
+            let imgWidth = printableWidth;
+            let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            // If height exceeds printable height, scale down to fit strictly on ONE single page
+            if (imgHeight > printableHeight) {
+                const ratio = printableHeight / imgHeight;
+                imgHeight = printableHeight;
+                imgWidth = imgWidth * ratio;
+            }
+
+            // Horizontally center on the A4 page
+            const posX = (pageWidth - imgWidth) / 2;
+            const posY = margin;
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+            pdf.addImage(imgData, 'JPEG', posX, posY, imgWidth, imgHeight);
+
+            pdf.save('VedicServices_Invoice_#VEDA-@Model.BookingId' + '.pdf');
+
+            if (btn) {
+                btn.innerHTML = '<span>✓</span><span>Downloaded (1 Page)</span>';
+                setTimeout(() => {
+                    btn.innerHTML = '<span>⬇️</span><span>Download PDF</span>';
+                    btn.disabled = false;
+                }, 2500);
+            }
+        } catch (err) {
+            console.error('PDF Generation Error:', err);
+            // Fallback to native browser print/save-as-pdf
+            window.print();
+            if (btn) {
+                btn.innerHTML = '<span>⬇️</span><span>Download PDF</span>';
+                btn.disabled = false;
+            }
+        }
+    }
+
+    // Auto trigger print/download if requested in query param (?download=true or ?print=true)
+    document.addEventListener("DOMContentLoaded", function () {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('print') === 'true') {
+            setTimeout(() => window.print(), 500);
+        } else if (params.get('download') === 'true') {
+            setTimeout(() => downloadInvoicePdf(), 800);
+        }
+    });
+</script>

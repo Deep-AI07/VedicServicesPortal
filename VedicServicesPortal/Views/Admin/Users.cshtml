@@ -1,0 +1,450 @@
+@model IEnumerable<VedicServicesPortal.Models.User>
+
+@{
+    ViewData["Title"] = "Manage Devotees & Users";
+    var bookingCounts = ViewBag.UserBookingCounts as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var currentUserId = Context.Session.GetInt32("UserId");
+}
+
+<div class="container py-4">
+
+    <!-- BREADCRUMB / BACK -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-semibold mb-2">
+                🪔 Sacred Portal Administration
+            </span>
+            <h1 class="fw-bold mb-1 display-6" style="font-family: 'Cinzel', serif; color: #3a1c06;">
+                👥 Devotees &amp; Users
+            </h1>
+            <p class="text-muted mb-0">
+                Manage registered devotees, temple seekers, and portal administrators.
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm">
+                ← Admin Dashboard
+            </a>
+            <a asp-controller="Admin" asp-action="CreateUser" class="btn btn-vedic-primary px-4 py-2 rounded-pill shadow-sm">
+                ✨ + Add New User
+            </a>
+        </div>
+    </div>
+
+    <!-- ALERTS -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" role="alert" style="background: #eafaf1; color: #1e7e34;">
+            <div class="d-flex align-items-center">
+                <span class="fs-4 me-2">🌺</span>
+                <div>
+                    <strong>Success!</strong> @TempData["Success"]
+                </div>
+            </div>
+            <button type="button" class="close text-muted" data-dismiss="alert" aria-label="Close" onclick="this.closest('.alert').remove()" style="background: none; border: none; font-size: 1.4rem;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center justify-content-between" role="alert" style="background: #fdf2f2; color: #9b1c1c;">
+            <div class="d-flex align-items-center">
+                <span class="fs-4 me-2">⚠️</span>
+                <div>
+                    <strong>Action Protected:</strong> @TempData["Error"]
+                </div>
+            </div>
+            <button type="button" class="close text-muted" data-dismiss="alert" aria-label="Close" onclick="this.closest('.alert').remove()" style="background: none; border: none; font-size: 1.4rem;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <!-- STAT SUMMARY CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background: linear-gradient(135deg, #fff9f0 0%, #ffffff 100%); border-left: 5px solid #f39c12 !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted text-uppercase fw-semibold small">Total Registered</span>
+                        <h2 class="fw-bold mb-0 text-dark">@(ViewBag.TotalUsers ?? Model?.Count() ?? 0)</h2>
+                        <small class="text-muted">Active portal accounts</small>
+                    </div>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #fff3e0; font-size: 24px;">
+                        👥
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background: linear-gradient(135deg, #fffbf4 0%, #ffffff 100%); border-left: 5px solid #e65100 !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted text-uppercase fw-semibold small">Devotees / Customers</span>
+                        <h2 class="fw-bold mb-0 text-dark">@(ViewBag.TotalDevotees ?? 0)</h2>
+                        <small class="text-muted">Booking Vedic services</small>
+                    </div>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #fbe9e7; font-size: 24px;">
+                        🙏
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background: linear-gradient(135deg, #fdf6f7 0%, #ffffff 100%); border-left: 5px solid #8d1b24 !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted text-uppercase fw-semibold small">Portal Administrators</span>
+                        <h2 class="fw-bold mb-0 text-dark">@(ViewBag.TotalAdmins ?? 0)</h2>
+                        <small class="text-muted">Full administrative privileges</small>
+                    </div>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #fee2e2; font-size: 24px;">
+                        🛡️
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USERS TABLE CARD -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border: 1px solid #f2e3cf !important;">
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <h5 class="mb-0 fw-bold" style="color: #3a1c06;">
+                    📜 Registered Accounts &amp; Password Directory
+                </h5>
+                <span class="badge bg-light text-muted border px-3 py-1 rounded-pill">
+                    @((Model?.Count() ?? 0)) Accounts
+                </span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill fw-bold" id="btnToggleAllPasswords" onclick="toggleAllPasswords()">
+                    👁️ Show All Passwords
+                </button>
+                <a asp-action="CreateUser" class="btn btn-sm btn-vedic-primary px-3 rounded-pill">
+                    + Add New Account
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background: #faf6f0; color: #5a381d; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <tr>
+                                <th class="ps-4 py-3">Devotee / User</th>
+                                <th class="py-3">Username</th>
+                                <th class="py-3">Email Address</th>
+                                <th class="py-3">Password</th>
+                                <th class="py-3">Assigned Role</th>
+                                <th class="py-3 text-center">Rituals Booked</th>
+                                <th class="pe-4 py-3 text-end">Management Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                var bCount = bookingCounts.ContainsKey(user.UserId) ? bookingCounts[user.UserId] : 0;
+                                var isCurrentUser = (currentUserId == user.UserId);
+
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm me-3"
+                                                 style="width: 44px; height: 44px; background: @(user.Role == "Admin" ? "#fee2e2" : "#fef3c7"); color: @(user.Role == "Admin" ? "#991b1b" : "#92400e"); border: 2px solid @(user.Role == "Admin" ? "#fca5a5" : "#fcd34d"); font-size: 16px;">
+                                                @(string.IsNullOrEmpty(user.Name) ? "U" : user.Name.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark mb-0">
+                                                    @user.Name
+                                                    @if (isCurrentUser)
+                                                    {
+                                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill ms-1" style="font-size: 10px;">
+                                                            You (Active)
+                                                        </span>
+                                                    }
+                                                </div>
+                                                <small class="text-muted">Account ID #@user.UserId</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">@@@(user.Username ?? user.Name)</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="text-dark font-monospace small">@user.Email</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="d-inline-flex align-items-center bg-light px-2 py-1 rounded border gap-2 user-pwd-container">
+                                            <span class="font-monospace small text-muted user-pwd-masked" id="pwd-masked-@user.UserId">••••••••</span>
+                                            <span class="font-monospace small text-dark fw-bold user-pwd-revealed d-none" id="pwd-revealed-@user.UserId">@user.Password</span>
+                                            <button type="button" class="btn btn-sm btn-link p-0 text-muted text-decoration-none" onclick="toggleUserPassword(@user.UserId, this)" title="Show/Hide password">👁️</button>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        @if (user.Role == "Admin")
+                                        {
+                                            <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">
+                                                🛡️ Administrator
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">
+                                                🙏 Devotee
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        @if (bCount > 0)
+                                        {
+                                            <span class="badge bg-light text-dark border px-3 py-1 rounded-pill fw-semibold">
+                                                🪔 @bCount Booking@(bCount > 1 ? "s" : "")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">None</span>
+                                        }
+                                    </td>
+                                    <td class="pe-4 py-3 text-end">
+                                        <div class="btn-group shadow-sm rounded-pill" role="group">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-warning text-dark px-2.5 fw-semibold" 
+                                                    onclick="openResetPasswordModal(@user.UserId, '@user.Name', '@(user.Username ?? user.Name)', '@user.Email', '@user.Password')" 
+                                                    title="Manage & Reset Password">
+                                                🔑 Password
+                                            </button>
+                                            <a asp-action="EditUser" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-secondary px-2.5" title="Edit Profile & Role">
+                                                ✏️ Edit
+                                            </a>
+                                            @if (isCurrentUser)
+                                            {
+                                                <button class="btn btn-sm btn-outline-danger px-2.5 opacity-50" disabled title="Cannot delete your own active session">
+                                                    🔒 Delete
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="DeleteUser" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-danger px-2.5" title="Remove User">
+                                                    🗑️ Delete
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="fs-1 mb-2">🕉️</div>
+                    <h5 class="text-muted">No users found in database</h5>
+                    <a asp-action="CreateUser" class="btn btn-vedic-primary mt-3 px-4 py-2 rounded-pill">
+                        Add First User
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     ADMIN MANAGE / RESET PASSWORD MODAL
+     ========================================================================== -->
+<div class="stitch-modal-overlay" id="adminPasswordModal" style="display: none;">
+    <div class="stitch-modal-card" style="max-width: 520px;">
+        <div class="stitch-modal-header" style="background: linear-gradient(135deg, #801818 0%, #4a0d10 100%);">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fs-4">🔑</span>
+                <div>
+                    <h4 class="mb-0 fw-bold font-serif fs-5 text-white">Manage Devotee Password</h4>
+                    <small class="text-white-50">Admin Security &amp; Credentials Center</small>
+                </div>
+            </div>
+            <button type="button" class="stitch-modal-close text-white" onclick="closeResetPasswordModal()">&times;</button>
+        </div>
+        <div class="stitch-modal-body p-4 bg-white">
+            <div class="p-3 rounded-3 mb-3 small" style="background: #fff9f0; border: 1px solid #dfbfbc;">
+                <p class="mb-1"><strong>Devotee:</strong> <span id="modalTargetUserName" class="text-dark fw-bold"></span></p>
+                <p class="mb-1"><strong>Username:</strong> <span id="modalTargetUserUsername" class="font-monospace text-primary-maroon fw-bold"></span></p>
+                <p class="mb-1"><strong>Email:</strong> <span id="modalTargetUserEmail" class="font-monospace text-muted"></span></p>
+                <p class="mb-0">
+                    <strong>Current Password:</strong> 
+                    <span id="modalTargetCurrentPwd" class="font-monospace fw-bold text-danger"></span>
+                </p>
+            </div>
+
+            <form asp-action="ChangeUserPassword" method="post" id="formChangeUserPassword">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="userId" id="modalTargetUserId" />
+
+                <!-- NEW PASSWORD INPUT -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="stitch-label mb-0">New Compliant Password *</label>
+                        <button type="button" class="btn btn-sm btn-outline-warning text-dark py-0 px-2 small" onclick="generateCompliantPassword()" style="font-size: 11px;">
+                            🎲 Auto-Generate Strong
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">🔒</span>
+                        <input type="text"
+                               name="newPassword"
+                               id="modalNewPasswordInput"
+                               class="form-control border-start-0 py-2 font-monospace"
+                               placeholder="e.g. Vedic@2026"
+                               required
+                               oninput="validateModalPassword(this.value)" />
+                    </div>
+                </div>
+
+                <!-- PASSWORD RULES CHECKLIST -->
+                <div class="p-2 rounded-2 mb-3 bg-light border" style="font-size: 11px;">
+                    <div class="fw-bold mb-1">Security Criteria:</div>
+                    <div class="row g-1">
+                        <div class="col-6"><span id="mRuleLength" class="text-danger">❌ Min 8 characters</span></div>
+                        <div class="col-6"><span id="mRuleUpper" class="text-danger">❌ 1 Capital (A-Z)</span></div>
+                        <div class="col-6"><span id="mRuleLower" class="text-danger">❌ 1 Lowercase (a-z)</span></div>
+                        <div class="col-6"><span id="mRuleNumber" class="text-danger">❌ 1 Number (0-9)</span></div>
+                        <div class="col-12"><span id="mRuleSpecial" class="text-danger">❌ 1 Special Symbol (@@$!%*?&#^()_-+=)</span></div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                    <button type="button" class="btn btn-outline-secondary px-3" onclick="closeResetPasswordModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnSubmitNewPassword" class="btn-stitch-primary py-2 px-4 shadow-sm">
+                        <span>Save &amp; Update Password</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let allPasswordsVisible = false;
+
+        function toggleUserPassword(userId, btn) {
+            const masked = document.getElementById('pwd-masked-' + userId);
+            const revealed = document.getElementById('pwd-revealed-' + userId);
+            if (revealed && masked) {
+                if (revealed.classList.contains('d-none')) {
+                    revealed.classList.remove('d-none');
+                    masked.classList.add('d-none');
+                    if (btn) btn.textContent = '🙈';
+                } else {
+                    revealed.classList.add('d-none');
+                    masked.classList.remove('d-none');
+                    if (btn) btn.textContent = '👁️';
+                }
+            }
+        }
+
+        function toggleAllPasswords() {
+            allPasswordsVisible = !allPasswordsVisible;
+            const btn = document.getElementById('btnToggleAllPasswords');
+            
+            document.querySelectorAll('.user-pwd-container').forEach(container => {
+                const masked = container.querySelector('.user-pwd-masked');
+                const revealed = container.querySelector('.user-pwd-revealed');
+                const toggleBtn = container.querySelector('button');
+
+                if (allPasswordsVisible) {
+                    if (masked) masked.classList.add('d-none');
+                    if (revealed) revealed.classList.remove('d-none');
+                    if (toggleBtn) toggleBtn.textContent = '🙈';
+                } else {
+                    if (masked) masked.classList.remove('d-none');
+                    if (revealed) revealed.classList.add('d-none');
+                    if (toggleBtn) toggleBtn.textContent = '👁️';
+                }
+            });
+
+            if (btn) {
+                btn.textContent = allPasswordsVisible ? '🙈 Hide All Passwords' : '👁️ Show All Passwords';
+            }
+        }
+
+        function openResetPasswordModal(userId, name, username, email, currentPassword) {
+            document.getElementById('modalTargetUserId').value = userId;
+            document.getElementById('modalTargetUserName').textContent = name;
+            document.getElementById('modalTargetUserUsername').textContent = '@@' + username;
+            document.getElementById('modalTargetUserEmail').textContent = email;
+            document.getElementById('modalTargetCurrentPwd').textContent = currentPassword;
+            
+            // Auto generate a fresh compliant password
+            generateCompliantPassword();
+
+            const modal = document.getElementById('adminPasswordModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('active');
+            }
+        }
+
+        function closeResetPasswordModal() {
+            const modal = document.getElementById('adminPasswordModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+        }
+
+        function generateCompliantPassword() {
+            const prefixes = ["Vedic", "Shubh", "Pavitra", "Mantra", "Shiva", "Ganesh", "Kalyan", "Aura"];
+            const specials = ["@@", "#", "$", "!", "%", "*", "&"];
+            const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            const randomSpecial = specials[Math.floor(Math.random() * specials.length)];
+            const randomNumber = Math.floor(100 + Math.random() * 900); // 3-digit number
+            const generated = `${randomPrefix}${randomSpecial}${randomNumber}`;
+
+            const input = document.getElementById('modalNewPasswordInput');
+            if (input) {
+                input.value = generated;
+                validateModalPassword(generated);
+            }
+        }
+
+        function validateModalPassword(val) {
+            val = val || "";
+            const hasLen = val.length >= 8;
+            const hasUp = /[A-Z]/.test(val);
+            const hasLow = /[a-z]/.test(val);
+            const hasNum = /[0-9]/.test(val);
+            const hasSpec = /[^a-zA-Z0-9]/.test(val);
+
+            setCheck('mRuleLength', hasLen, "Min 8 characters");
+            setCheck('mRuleUpper', hasUp, "1 Capital (A-Z)");
+            setCheck('mRuleLower', hasLow, "1 Lowercase (a-z)");
+            setCheck('mRuleNumber', hasNum, "1 Number (0-9)");
+            setCheck('mRuleSpecial', hasSpec, "1 Special Symbol (@@$!%*?&#^()_-+=)");
+
+            const btn = document.getElementById('btnSubmitNewPassword');
+            if (btn) {
+                btn.disabled = !(hasLen && hasUp && hasLow && hasNum && hasSpec);
+            }
+        }
+
+        function setCheck(id, ok, text) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.className = ok ? "text-success fw-bold" : "text-danger";
+                el.textContent = (ok ? "✓ " : "❌ ") + text;
+            }
+        }
+    </script>
+}

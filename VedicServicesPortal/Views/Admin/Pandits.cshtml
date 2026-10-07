@@ -1,0 +1,145 @@
+@model IEnumerable<VedicServicesPortal.Models.Pandit>
+
+@{
+    ViewData["Title"] = "Manage Pandits";
+}
+
+<div class="container mt-5 mb-5">
+
+    <div class="admin-header">
+        <div>
+            <h1>Manage Pandits</h1>
+            <p>Add and manage Vedic Pandits.</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Dashboard" class="btn btn-outline-secondary">
+                ← Dashboard
+            </a>
+            <a asp-action="CreatePandit" class="btn btn-primary">
+                + Add Pandit
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center">
+            <span>@TempData["Success"]</span>
+            <button type="button" class="close text-muted" data-dismiss="alert" aria-label="Close" onclick="this.closest('.alert').remove()" style="background: none; border: none; font-size: 1.4rem;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show d-flex justify-content-between align-items-center">
+            <span>@TempData["Error"]</span>
+            <button type="button" class="close text-muted" data-dismiss="alert" aria-label="Close" onclick="this.closest('.alert').remove()" style="background: none; border: none; font-size: 1.4rem;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="empty-bookings">
+            <div class="empty-icon">
+                🧘
+            </div>
+            <h3>No Pandits Found</h3>
+            <p>Add your first Pandit.</p>
+            <a asp-action="CreatePandit" class="btn btn-primary">
+                Add Pandit
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var pandit in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="admin-management-card">
+                        <div class="management-icon">
+                            🧘
+                        </div>
+
+                        <h3>@pandit.Name</h3>
+
+                        <p>
+                            <strong>Mobile:</strong> @pandit.Mobile
+                        </p>
+
+                        <p>
+                            <strong>Email:</strong> @pandit.Email
+                        </p>
+
+                        <p>
+                            <strong>Experience:</strong> @pandit.Experience years
+                        </p>
+
+                        <p>
+                            <strong>Specialization:</strong> @pandit.Specialization
+                        </p>
+
+                        @if (pandit.IsAvailable)
+                        {
+                            <span class="badge bg-success mb-3">
+                                Available
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger mb-3">
+                                Unavailable
+                            </span>
+                        }
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <a asp-action="PanditDetails"
+                               asp-route-id="@pandit.PanditId"
+                               class="btn btn-outline-primary">
+                                Details
+                            </a>
+
+                            <a asp-action="EditPandit"
+                               asp-route-id="@pandit.PanditId"
+                               class="btn btn-outline-warning">
+                                Edit
+                            </a>
+
+                            <a asp-action="DeletePandit"
+                               asp-route-id="@pandit.PanditId"
+                               class="btn btn-outline-danger">
+                                Delete
+                            </a>
+                        </div>
+
+                        <form asp-action="TogglePanditAvailability"
+                              method="post"
+                              class="mt-3">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@pandit.PanditId" />
+
+                            @if (pandit.IsAvailable)
+                            {
+                                <button type="submit" class="btn btn-sm btn-danger w-100">
+                                    Make Unavailable
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-sm btn-success w-100">
+                                    Make Available
+                                </button>
+                            }
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</div>

@@ -1,0 +1,243 @@
+================================================================================
+                    VEDIC SERVICES PORTAL - PROJECT INFORMATION
+================================================================================
+Project Name    : VedicServicesPortal
+Technology Stack: ASP.NET Core 3.1 MVC, C#, Entity Framework Core, SQL Server LocalDB,
+                  Bootstrap 4, Vanilla CSS (Sacred Aesthetic), HTML5, JavaScript
+Date Generated  : 10 September 2026
+Generated For   : Personal Reference / Viva / Documentation / Academic Report
+================================================================================
+
+
+1. NO. OF TABLES IN YOUR PROJECT
+--------------------------------------------------------------------------------
+Answer: 5 Main Tables (Plus 1 Migration History Table = 6 Total in SQL Database)
+
+Entity Framework Core DbSets (ApplicationDbContext):
+  1. Users
+     - Purpose: Stores devotee and administrator account details, credentials, and roles.
+     - Key Columns: UserId (PK), Name, Username, Email, Password, Role.
+
+  2. Services
+     - Purpose: Stores the catalog of authentic Vedic ceremonies and pujas.
+     - Key Columns: ServiceId (PK), ServiceName, Description, Price, Duration, IsActive.
+
+  3. Pandits
+     - Purpose: Stores verified Gurukul Vedic Acharyas and Purohits.
+     - Key Columns: PanditId (PK), Name, Mobile, Specialization, ExperienceYears, IsAvailable.
+
+  4. TimeSlots
+     - Purpose: Stores scheduled Muhurat timings allocated to Pandits.
+     - Key Columns: SlotId (PK), PanditId (FK), Date, StartTime, EndTime, IsBooked.
+
+  5. Bookings
+     - Purpose: Stores devotee ceremony reservations, schedule, venue, dakshina, and status.
+     - Key Columns: BookingId (PK), UserId (FK), PanditId (FK), ServiceId (FK), 
+                    SlotId (FK), BookingDate, Address, TotalAmount, Status, 
+                    PaymentMethod, CreatedAt.
+
+  * Additional Internal Table:
+    - __EFMigrationsHistory (tracks applied Entity Framework database migrations).
+
+
+2. NO. OF AREAS IN YOUR PROJECT
+--------------------------------------------------------------------------------
+Answer: 0 Areas
+
+Explanation:
+  The project does not use ASP.NET Core Areas (/Areas). It follows a clean,
+  standard monolithic ASP.NET Core MVC architecture. Administrative features are
+  managed through a dedicated controller (AdminController.cs) and corresponding
+  views folder (Views/Admin/), secured with role checks ("Admin").
+
+
+3. NO. OF CONTROLLERS IN YOUR PROJECT
+--------------------------------------------------------------------------------
+Answer: 5 Controllers
+
+List of Controllers:
+  1. AccountController.cs
+     - Manages devotee registration, role-based login (Devotee username / Admin email),
+       logout, session termination, and cache clearing.
+
+  2. AdminController.cs
+     - Manages administrative dashboard metrics, CRUD operations for Services, Pandits,
+       TimeSlots, and Devotee accounts. Handles booking status transitions (Confirm,
+       Complete, Cancel) and devotee password viewing and resetting.
+
+  3. BookingController.cs
+     - Manages ceremony booking creation, Muhurat slot selection, booking confirmation,
+       the devotee's "My Bookings" history, and Sacred Invoice generation (Print & PDF).
+
+  4. HomeController.cs
+     - Manages public home/landing page, featured sacred ceremonies, auspicious Muhurat
+       highlights, dynamic Panchang integration, and privacy policy.
+
+  5. ServiceController.cs
+     - Manages sacred ceremony catalog browsing, service details, price filtering,
+       keyword search, and the JSON endpoint for live character-by-character search suggestions.
+
+
+4. NO. OF VIEWS IN YOUR PROJECT
+--------------------------------------------------------------------------------
+Answer: 35 Views (.cshtml files)
+
+Breakdown by Folder:
+  Views/Account (2 Views):
+    1. Login.cshtml                 (Dual-tab login: Devotee via Username, Admin via Email)
+    2. Register.cshtml              (Devotee signup with real-time password strength checklist)
+
+  Views/Admin (20 Views):
+    3. Dashboard.cshtml             (Admin KPI overview and quick navigation)
+    4. Bookings.cshtml              (All ceremony bookings directory)
+    5. BookingDetails.cshtml        (Comprehensive booking, payment, and status details)
+    6. Users.cshtml                 (Devotee directory with password visibility & reset modal)
+    7. CreateUser.cshtml            (Admin create devotee user)
+    8. EditUser.cshtml              (Admin edit devotee user details)
+    9. DeleteUser.cshtml            (Admin delete devotee user confirmation)
+    10. Services.cshtml             (Vedic ceremony catalog management)
+    11. CreateService.cshtml        (Add new Vedic puja service)
+    12. EditService.cshtml          (Modify ceremony price, description, duration)
+    13. DeleteService.cshtml        (Deactivate / remove ceremony confirmation)
+    14. Pandits.cshtml              (Vedic Gurukul Pandits directory)
+    15. CreatePandit.cshtml         (Add new verified Pandit)
+    16. EditPandit.cshtml           (Update Pandit experience and specialization)
+    17. DeletePandit.cshtml         (Delete Pandit confirmation)
+    18. PanditDetails.cshtml        (View Pandit profile and assigned bookings)
+    19. TimeSlots.cshtml            (Auspicious Muhurat slots management)
+    20. CreateTimeSlot.cshtml       (Generate new Muhurat slot for a Pandit)
+    21. EditTimeSlot.cshtml         (Modify slot timings and availability)
+    22. DeleteTimeSlot.cshtml       (Delete slot confirmation)
+
+  Views/Booking (4 Views):
+    23. Create.cshtml               (Interactive booking form with Date picker & Muhurat cards)
+    24. Confirmation.cshtml         (Booking receipt with Sankalp Patra summary)
+    25. MyBookings.cshtml           (Devotee personal booking history & invoice links)
+    26. Invoice.cshtml              (Printable & downloadable single-page Sacred Dakshina Invoice)
+
+  Views/Home (2 Views):
+    27. Index.cshtml                (Hero landing page, Muhurat pill, featured services, AI bot)
+    28. Privacy.cshtml              (Sanctum trust and privacy policies)
+
+  Views/Service (2 Views):
+    29. Index.cshtml                (Full ceremonies catalog with live autocomplete dropdown)
+    30. Details.cshtml              (Detailed puja vidhi, samagri inclusions, booking CTA)
+
+  Views/Shared (3 Views):
+    31. _Layout.cshtml              (Master layout, Vedic navigation, Panchang modal, VedaMitra bot)
+    32. Error.cshtml                (Global error view)
+    33. _ValidationScriptsPartial.cshtml (jQuery validate & unobtrusive scripts)
+
+  Root Views (2 Views):
+    34. _ViewStart.cshtml           (Default layout assignment)
+    35. _ViewImports.cshtml         (Global tag helpers and namespace imports)
+
+
+5. IS LOGIN PASSWORD IDENTITY FEATURES INCLUDED ?
+--------------------------------------------------------------------------------
+Answer: YES, Custom Role-Based Identity & High-Security Password Features are Fully Included.
+
+Key Identity & Security Features:
+  - Custom Database Identity:
+    Managed via the Users table with distinct role claims ("Admin" vs "User").
+  
+  - Dual-Role Authentication:
+    * Devotees sign in using their unique Username and Password.
+    * Administrators sign in using their registered Email (admin@gmail.com) and Password.
+    * Cross-role protection prevents standard devotees from accessing admin interfaces.
+
+  - Strict Password Complexity Rules (Enforced Client-Side & Server-Side):
+    1. Minimum 8 characters in length.
+    2. At least one uppercase capital letter (A-Z).
+    3. At least one lowercase letter (a-z).
+    4. At least one numeric digit (0-9).
+    5. At least one special symbol (@$!%*?&#^()_-+=).
+
+  - Live Interactive Password Checklist:
+    Displayed in real time on registration and admin password reset modals, turning
+    green item-by-item as the user types.
+
+  - Admin Password Visibility & Management:
+    * Master toggle button: "Show All Passwords" / "Hide All Passwords" in Admin directory.
+    * Individual row toggle: "Show / Hide" for each devotee row.
+    * Admin Password Reset Modal: View current password and set a new compliant password.
+    * "Auto-Generate Strong" Button: Instantly generates pre-validated passwords (e.g. Shubh@2026).
+
+  - Session-Based Identity State:
+    Stores UserId, UserName, UserEmail, and UserRole in encrypted HTTP-only session cookies
+    with anti-cache headers preventing back-button browser cache leaks.
+
+
+6. LINQ USED IN YOUR PROJECT ?
+--------------------------------------------------------------------------------
+Answer: YES, LINQ (Language Integrated Query) is Extensively Used Throughout the Project.
+
+Over 135+ LINQ queries are used across the codebase for querying, filtering,
+sorting, and aggregating database data through Entity Framework Core.
+
+Examples of LINQ Methods Used:
+  - .Where(...)
+    Filtering active services, available pandits, unbooked Muhurat slots, and
+    user-specific bookings:
+    Example: _context.Services.Where(s => s.IsActive).ToList();
+
+  - .FirstOrDefault(...) / .Find(...)
+    Retrieving specific records for authentication, details, and edits:
+    Example: _context.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
+
+  - .Include(...)
+    Eager loading relational tables for complete booking and invoice details:
+    Example: _context.Bookings.Include(b => b.User)
+                              .Include(b => b.Service)
+                              .Include(b => b.Pandit)
+                              .Include(b => b.TimeSlot)
+                              .FirstOrDefault(b => b.BookingId == id);
+
+  - .Select(...)
+    Projecting lightweight objects for live autocomplete search suggestions:
+    Example: _context.Services.Where(...).Select(s => new { s.ServiceId, s.ServiceName, s.Price });
+
+  - .OrderBy(...) / .OrderByDescending(...)
+    Sorting booking histories in reverse chronological order and ordering Muhurat slots.
+
+  - .Any(...)
+    Checking if a username, email, or time slot conflict already exists.
+
+  - .Count(...) & .Sum(...)
+    Calculating admin dashboard KPI cards (Total Bookings, Confirmed Bookings, Total Dakshina).
+
+
+7. SHOPPING CART DEVELOPED IN YOUR PROJECT ?
+--------------------------------------------------------------------------------
+Answer: NO Traditional E-Commerce Shopping Cart.
+        INSTEAD, a Dedicated "Spiritual Ceremony Booking & Consecration Reservation System"
+        is Developed.
+
+Why Not a Standard E-Commerce Shopping Cart?
+  - Vedic rituals, Havans, and Pujas are not physical consumer products that are added
+    in multiples to an e-commerce shopping bag and delivered via courier.
+  - Each sacred ceremony is a personalized spiritual sankalp requiring:
+      1. A specific devotee (Yajman).
+      2. An auspicious ceremony date (calculated via Vedic Panchang).
+      3. A qualified Gurukul Pandit assigned exclusively to that ritual.
+      4. An auspicious Muhurat time slot (e.g., Brahma Muhurat, Abhijit Muhurat).
+      5. A specific ceremony location (devotee's residence, office, or temple sanctum).
+
+How the Direct Spiritual Booking Flow Works:
+  1. Ceremony Discovery:
+     Devotee browses the catalog (/Service) or searches via the live autocomplete bar.
+  2. Direct Sacred Booking (/Booking/Create?serviceId=X):
+     Devotee selects the ceremony, picks the ceremony date via an interactive date picker,
+     chooses an auspicious Muhurat slot, selects their preferred Pandit, and enters the address.
+  3. Culturally Reverent Dakshina Offering:
+     Devotee chooses their payment method:
+       - UPI with dynamic QR code
+       - Debit / Credit Card
+       - "Pay Dakshina After Puja (In-Person)" (respectful alternative to awkward COD)
+  4. Instant Consecration & Invoice:
+     Devotee receives an immediate booking confirmation, a digital Sankalp Patra receipt,
+     and a downloadable / printable single-page Sacred Dakshina PDF Invoice.
+
+================================================================================
+                           END OF PROJECT INFORMATION
+================================================================================

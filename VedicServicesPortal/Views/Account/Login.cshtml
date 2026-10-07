@@ -1,0 +1,221 @@
+@model VedicServicesPortal.Models.User
+
+@{
+    ViewData["Title"] = "Portal Login";
+    var activeTab = (ViewBag.ActiveTab as string) ?? "user";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="stitch-card shadow-2xl overflow-hidden">
+                <!-- Header -->
+                <div class="d-flex align-items-center justify-content-between p-4"
+                     style="background: linear-gradient(135deg, #801818 0%, #5f0006 100%); color: #fff;">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fs-3 font-serif">ॐ</span>
+                        <div>
+                            <h2 class="fs-5 fw-bold font-serif mb-0 text-white">Vedic Services Portal Login</h2>
+                            <small style="color: #ffdad6; font-size: 11px;">Faith • Tradition • Blessed Living</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 p-sm-5 bg-white">
+                    <!-- ROLE SELECTION TABS -->
+                    <div class="d-flex p-1 rounded-3 mb-4" style="background: #fcf5ee; border: 1px solid #dfbfbc;">
+                        <button type="button" 
+                                id="tabBtnUser" 
+                                class="btn flex-fill py-2 fw-bold text-center transition-all @(activeTab == "user" ? "btn-stitch-primary shadow-xs" : "text-muted-sacred")"
+                                style="border-radius: 8px; font-size: 13px;"
+                                onclick="switchLoginRole('user')">
+                            🪔 Devotee Login
+                        </button>
+                        <button type="button" 
+                                id="tabBtnAdmin" 
+                                class="btn flex-fill py-2 fw-bold text-center transition-all @(activeTab == "admin" ? "btn-stitch-primary shadow-xs" : "text-muted-sacred")"
+                                style="border-radius: 8px; font-size: 13px;"
+                                onclick="switchLoginRole('admin')">
+                            🛡️ Admin Login
+                        </button>
+                    </div>
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success border-0 shadow-sm rounded-3 py-2 small mb-3">
+                            ✓ @TempData["Success"]
+                        </div>
+                    }
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger border-0 shadow-sm rounded-3 py-2 small mb-3">
+                            ⚠️ @ViewBag.Error
+                        </div>
+                    }
+
+                    <!-- 1. DEVOTEE / USER LOGIN FORM (Username & Password) -->
+                    <div id="userLoginFormContainer" class="@(activeTab == "user" ? "" : "d-none")">
+                        <div class="p-2 rounded-2 mb-3 small" style="background: #fff9f3; border-left: 3px solid #b45309; font-size: 12px; color: #7c2d12;">
+                            Devotees sign in using their registered <strong>Username</strong> and <strong>Password</strong>.
+                        </div>
+
+                        <form asp-action="Login" method="post" id="userLoginForm">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="loginRole" value="User" />
+                            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                            <!-- Devotee Username -->
+                            <div class="mb-3">
+                                <label class="stitch-label">Devotee Username *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">👤</span>
+                                    <input type="text"
+                                           name="username"
+                                           id="devoteeUsernameInput"
+                                           class="stitch-form-control border-start-0"
+                                           placeholder="e.g. anand_sharma or vivek6"
+                                           autocomplete="username"
+                                           required />
+                                </div>
+                                <small class="text-muted" style="font-size: 11px;">Enter the username chosen during registration.</small>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="stitch-label mb-0">Password *</label>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">🔒</span>
+                                    <input type="password"
+                                           name="password"
+                                           id="devoteePasswordInput"
+                                           class="stitch-form-control border-start-0 border-end-0"
+                                           placeholder="••••••••"
+                                           autocomplete="current-password"
+                                           required />
+                                    <button type="button" 
+                                            class="btn btn-outline-secondary border-start-0 border-sacred bg-sacred-low text-muted"
+                                            onclick="togglePasswordVisibility('devoteePasswordInput', this)"
+                                            title="Toggle password view">👁️</button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-stitch-primary w-100 py-3 shadow-md mb-3">
+                                <span>Sign In as Devotee</span>
+                                <span>→</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 2. ADMIN LOGIN FORM (Email & Password) -->
+                    <div id="adminLoginFormContainer" class="@(activeTab == "admin" ? "" : "d-none")">
+                        <div class="p-2 rounded-2 mb-3 small" style="background: #f5f3ff; border-left: 3px solid #6d28d9; font-size: 12px; color: #4c1d95;">
+                            Administrators sign in using their registered <strong>Email Address</strong> and <strong>Password</strong>.
+                        </div>
+
+                        <form asp-action="Login" method="post" id="adminLoginForm">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="loginRole" value="Admin" />
+                            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                            <!-- Admin Email -->
+                            <div class="mb-3">
+                                <label class="stitch-label">Administrator Email *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">✉️</span>
+                                    <input type="email"
+                                           name="email"
+                                           id="adminEmailInput"
+                                           class="stitch-form-control border-start-0"
+                                           placeholder="admin@gmail.com"
+                                           autocomplete="email"
+                                           required />
+                                </div>
+                                <small class="text-muted" style="font-size: 11px;">Enter official administrator email address.</small>
+                            </div>
+
+                            <!-- Admin Password -->
+                            <div class="mb-4">
+                                <label class="stitch-label mb-1">Admin Password *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">🔒</span>
+                                    <input type="password"
+                                           name="password"
+                                           id="adminPasswordInput"
+                                           class="stitch-form-control border-start-0 border-end-0"
+                                           placeholder="••••••••"
+                                           autocomplete="current-password"
+                                           required />
+                                    <button type="button" 
+                                            class="btn btn-outline-secondary border-start-0 border-sacred bg-sacred-low text-muted"
+                                            onclick="togglePasswordVisibility('adminPasswordInput', this)"
+                                            title="Toggle password view">👁️</button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-stitch-primary w-100 py-3 shadow-md mb-3" style="background: linear-gradient(135deg, #4c1d95 0%, #311042 100%);">
+                                <span>Sign In to Admin Portal</span>
+                                <span>→</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="text-center pt-3 border-top border-sacred small text-muted-sacred">
+                        Don't have a sacred devotee account?
+                        <a asp-action="Register" class="text-primary-maroon fw-bold text-decoration-none ms-1">
+                            Register here with Username
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function switchLoginRole(role) {
+            const userTab = document.getElementById('tabBtnUser');
+            const adminTab = document.getElementById('tabBtnAdmin');
+            const userContainer = document.getElementById('userLoginFormContainer');
+            const adminContainer = document.getElementById('adminLoginFormContainer');
+
+            if (role === 'admin') {
+                userTab.classList.remove('btn-stitch-primary', 'shadow-xs');
+                userTab.classList.add('text-muted-sacred');
+
+                adminTab.classList.remove('text-muted-sacred');
+                adminTab.classList.add('btn-stitch-primary', 'shadow-xs');
+
+                userContainer.classList.add('d-none');
+                adminContainer.classList.remove('d-none');
+                document.getElementById('adminEmailInput').focus();
+            } else {
+                adminTab.classList.remove('btn-stitch-primary', 'shadow-xs');
+                adminTab.classList.add('text-muted-sacred');
+
+                userTab.classList.remove('text-muted-sacred');
+                userTab.classList.add('btn-stitch-primary', 'shadow-xs');
+
+                adminContainer.classList.add('d-none');
+                userContainer.classList.remove('d-none');
+                document.getElementById('devoteeUsernameInput').focus();
+            }
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+    </script>
+}

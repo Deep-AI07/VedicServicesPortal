@@ -1,0 +1,161 @@
+@model VedicServicesPortal.Models.Service
+
+@{
+    ViewData["Title"] = Model.ServiceName + " - Sacred Details";
+    var isAdmin = (Context.Session.GetString("UserRole") == "Admin");
+}
+
+<div class="container py-4 py-lg-5" style="max-width: 1100px;">
+
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-transparent p-0 mb-0 small">
+            <li class="breadcrumb-item">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted-sacred">
+                    Home
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-controller="Service" asp-action="Index" class="text-decoration-none text-muted-sacred">
+                    Sacred Services
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-deep-maroon fw-bold" aria-current="page">
+                @Model.ServiceName
+            </li>
+        </ol>
+    </nav>
+
+    <!-- TOP NAVIGATION & ACTION BAR -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <a asp-controller="Service" asp-action="Index" class="btn-stitch-outline py-2 px-4 small">
+            ← Back to All Services
+        </a>
+
+        <div class="d-flex gap-2">
+            @if (isAdmin)
+            {
+                <a asp-controller="Admin" asp-action="EditService" asp-route-id="@Model.ServiceId" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2">
+                    ✏️ Edit in Admin
+                </a>
+            }
+            <a asp-controller="Booking" asp-action="Create" asp-route-serviceId="@Model.ServiceId" class="btn-stitch-primary py-2 px-4 small">
+                <span>Book This Service</span>
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN SERVICE DETAILS CARD -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="stitch-card mb-5 overflow-hidden">
+                <!-- HEADER BANNER -->
+                <div class="text-center py-5 px-4 position-relative" style="background: linear-gradient(135deg, #801818 0%, #5f0006 100%); color: #fff;">
+                    <div class="mandala-watermark position-absolute w-100 h-100" style="inset: 0; opacity: 0.15; pointer-events: none;"></div>
+                    <div class="position-relative" style="z-index: 1;">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle shadow mb-3"
+                             style="width: 72px; height: 72px; font-size: 34px; color: #5f0006; border: 2px solid #cca830;">
+                            ॐ
+                        </div>
+                        <div class="d-block mb-2">
+                            <span class="badge rounded-pill px-3 py-1 bg-sacred-container text-saffron fw-bold small">
+                                Verified Vedic Vidhi
+                            </span>
+                        </div>
+                        <h1 class="display-6 fw-bold mb-2 font-serif text-white">
+                            @Model.ServiceName
+                        </h1>
+                        <p class="mx-auto mb-0" style="max-width: 620px; color: #ffdad6; font-size: 0.95rem;">
+                            Performed strictly according to ancient Vedic traditions by certified Gurukul Purohits with consecrated mantras and complete samagri.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="p-4 p-md-5 bg-white">
+                    <!-- DESCRIPTION -->
+                    <div class="mb-5">
+                        <div class="d-inline-flex align-items-center gap-2 mb-2 text-saffron small fw-bold text-uppercase">
+                            <span>📖</span>
+                            <span>Ritual Overview &amp; Spiritual Vidhi</span>
+                        </div>
+                        <h3 class="fs-4 fw-bold font-serif text-dark mb-3">About the Ceremony</h3>
+                        <p class="text-muted-sacred fs-6" style="line-height: 1.8;">
+                            @Model.Description
+                        </p>
+                    </div>
+
+                    <!-- INFORMATION HIGHLIGHTS -->
+                    <div class="row g-3 mb-5">
+                        <div class="col-md-6">
+                            <div class="p-4 rounded-4 h-100 text-center bg-sacred-low border border-sacred">
+                                <span class="small fw-bold text-saffron text-uppercase d-block mb-1" style="font-size: 11px;">Dakshina / Offering</span>
+                                <h2 class="display-6 fw-bold mb-1 font-serif text-primary-maroon">₹@Model.Price.ToString("N0")</h2>
+                                <small class="text-muted-sacred">Includes priest dakshina &amp; shastric sankalp</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-4 rounded-4 h-100 text-center bg-sacred-low border border-sacred">
+                                <span class="small fw-bold text-saffron text-uppercase d-block mb-1" style="font-size: 11px;">Estimated Duration</span>
+                                <h2 class="display-6 fw-bold mb-1 font-serif text-dark">@Model.Duration Hours</h2>
+                                <small class="text-muted-sacred">Detailed vidhi, havan aahutis, and concluding aarti</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WHAT IS INCLUDED -->
+                    <div class="p-4 rounded-4 bg-sacred-container border border-sacred mb-5">
+                        <h4 class="fs-6 fw-bold text-deep-maroon font-serif mb-3 text-uppercase" style="letter-spacing: 0.5px;">
+                            🌺 What Is Included in This Ritual:
+                        </h4>
+                        <div class="row g-3 small text-muted-sacred">
+                            <div class="col-md-6 d-flex align-items-center gap-2">
+                                <span class="text-saffron fw-bold fs-6">✓</span>
+                                <span class="fw-semibold">Verified, background-checked Gurukul Vedic Pandit</span>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center gap-2">
+                                <span class="text-saffron fw-bold fs-6">✓</span>
+                                <span class="fw-semibold">Sankalp ceremony in devotee's Gotra, Nakshatra &amp; Name</span>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center gap-2">
+                                <span class="text-saffron fw-bold fs-6">✓</span>
+                                <span class="fw-semibold">Auspicious panchang muhurat scheduling</span>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center gap-2">
+                                <span class="text-saffron fw-bold fs-6">✓</span>
+                                <span class="fw-semibold">100% consecrated havan samagri &amp; holy Ganga jal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA BOOKING SECTION -->
+                    <div class="text-center p-4 p-md-5 rounded-4 border border-sacred"
+                         style="background: linear-gradient(135deg, #fff9f0 0%, #ffeadc 100%);">
+                        <span class="fs-3 mb-2 d-block">🪔</span>
+                        <h3 class="fs-4 fw-bold mb-2 font-serif text-dark">
+                            Ready to Book This Auspicious Ceremony?
+                        </h3>
+                        <p class="small text-muted-sacred mx-auto mb-4" style="max-width: 540px;">
+                            Select an experienced Pandit, choose your auspicious muhurat date and time slot, and receive divine blessings.
+                        </p>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a asp-controller="Booking"
+                               asp-action="Create"
+                               asp-route-serviceId="@Model.ServiceId"
+                               class="btn-stitch-primary py-3 px-5 shadow-md">
+                                <span>Continue to Book Pandit</span>
+                                <span>→</span>
+                            </a>
+                            <a asp-controller="Service"
+                               asp-action="Index"
+                               class="btn-stitch-secondary py-3 px-4">
+                                ← Explore Other Pujas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

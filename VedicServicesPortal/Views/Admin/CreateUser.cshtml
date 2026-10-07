@@ -1,0 +1,132 @@
+@model VedicServicesPortal.Models.User
+
+@{
+    ViewData["Title"] = "Add New User";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+
+            <!-- BREADCRUMB / BACK LINK -->
+            <div class="mb-3">
+                <a asp-controller="Admin" asp-action="Users" class="text-decoration-none text-muted small fw-semibold">
+                    ← Back to Devotees &amp; Users Directory
+                </a>
+            </div>
+
+            <!-- CARD -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border: 1px solid #f2e3cf !important;">
+                
+                <div class="card-header text-center py-4 border-bottom" style="background: linear-gradient(135deg, #fff9f0 0%, #fff3e0 100%);">
+                    <div class="fs-1 mb-2">🪔</div>
+                    <h3 class="fw-bold mb-1" style="font-family: 'Cinzel', serif; color: #3a1c06;">
+                        Add New Portal Account
+                    </h3>
+                    <p class="text-muted small mb-0">
+                        Create a registered devotee profile or assign administrative credentials.
+                    </p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <form asp-action="CreateUser" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4" role="alert"></div>
+
+                        <!-- FULL NAME -->
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label fw-bold text-dark">
+                                Devotee / User Full Name <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">👤</span>
+                                <input asp-for="Name" class="form-control border-start-0 py-2" placeholder="e.g. Rameshwar Sharma" required />
+                            </div>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <!-- USERNAME -->
+                        <div class="mb-4">
+                            <label asp-for="Username" class="form-label fw-bold text-dark">
+                                Devotee Username (For Login) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">🏷️</span>
+                                <input asp-for="Username" class="form-control border-start-0 py-2" placeholder="e.g. rameshwar_sharma" required />
+                            </div>
+                            <span asp-validation-for="Username" class="text-danger small"></span>
+                            <div class="form-text small text-muted">Devotees use this username to sign in to the portal.</div>
+                        </div>
+
+                        <!-- EMAIL -->
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label fw-bold text-dark">
+                                Email Address <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">✉️</span>
+                                <input asp-for="Email" type="email" class="form-control border-start-0 py-2" placeholder="e.g. rameshwar@gmail.com" required />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                            <div class="form-text small text-muted">Must be a valid and unique email address (Admins use this to sign in).</div>
+                        </div>
+
+                        <!-- PASSWORD -->
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label fw-bold text-dark">
+                                Initial Password <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">🔑</span>
+                                <input asp-for="Password" type="password" class="form-control border-start-0 py-2" placeholder="e.g. Vedic@2026" required />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                            <div class="form-text small text-muted">Must be at least 8 characters with 1 uppercase, 1 lowercase, 1 number, and 1 special symbol.</div>
+                        </div>
+
+                        <!-- ROLE SELECTION -->
+                        <div class="mb-4">
+                            <label asp-for="Role" class="form-label fw-bold text-dark">
+                                Account Role &amp; Permissions <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Role" class="form-select py-2">
+                                <option value="User">🙏 Devotee / User (Can browse rituals &amp; book pandits)</option>
+                                <option value="Admin">🛡️ Administrator (Full portal, booking, pandit &amp; slot management)</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger small"></span>
+                        </div>
+
+                        <!-- ROLE NOTICE -->
+                        <div class="alert alert-light border rounded-3 p-3 mb-4" style="background: #faf8f5;">
+                            <div class="d-flex align-items-center">
+                                <span class="fs-4 me-2">ℹ️</span>
+                                <small class="text-muted">
+                                    <strong>Role Overview:</strong> Devotees can view rituals, select muhurat time slots, book certified Pandits, and view their personal bookings. Administrators have full access to manage all bookings, services, time slots, pandits, and user accounts.
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- SUBMIT & CANCEL BUTTONS -->
+                        <div class="d-flex gap-3 pt-2">
+                            <button type="submit" class="btn btn-vedic-primary flex-grow-1 py-2 rounded-pill fw-semibold shadow-sm">
+                                ✨ Create Account
+                            </button>
+                            <a asp-action="Users" class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+                                Cancel
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

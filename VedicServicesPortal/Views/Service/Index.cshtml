@@ -1,0 +1,385 @@
+@model IEnumerable<VedicServicesPortal.Models.Service>
+
+@{
+    ViewData["Title"] = "Sacred Vedic Services Catalog";
+    var isAdmin = (Context.Session.GetString("UserRole") == "Admin");
+}
+
+<div class="container py-4 py-lg-5" style="max-width: 1200px;">
+
+    <!-- TOP BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-transparent p-0 mb-0 small">
+            <li class="breadcrumb-item">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted-sacred">
+                    Home
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-deep-maroon fw-bold" aria-current="page">
+                Sacred Services Catalog
+            </li>
+        </ol>
+    </nav>
+
+    <!-- ADMIN CONTEXT TOOLBAR -->
+    @if (isAdmin)
+    {
+        <div class="alert border-0 shadow-sm rounded-4 p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2"
+             style="background: linear-gradient(135deg, #fff3e0 0%, #fee2e2 100%); border-left: 5px solid #801818 !important;">
+            <div class="d-flex align-items-center">
+                <span class="fs-4 me-2">🛡️</span>
+                <div>
+                    <strong class="text-dark">Administrator Mode:</strong>
+                    <span class="text-muted-sacred small">You are viewing the devotee-facing services catalog.</span>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                    ← Admin Dashboard
+                </a>
+                <a asp-controller="Admin" asp-action="Services" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                    ⚙️ Manage Services
+                </a>
+                <a asp-controller="Admin" asp-action="CreateService" class="btn btn-sm btn-stitch-primary rounded-pill px-3">
+                    + Add New Service
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- HEADER HERO BANNER -->
+    <div class="text-center py-5 mb-5 rounded-5 position-relative overflow-hidden shadow-xs"
+         style="background: linear-gradient(135deg, #fff9f0 0%, #fff1e9 50%, #ffeadc 100%); border: 1px solid #dfbfbc;">
+        <div class="mandala-watermark position-absolute w-100 h-100" style="inset: 0; opacity: 0.18; pointer-events: none;"></div>
+        <div class="position-relative" style="z-index: 1;">
+            <div class="d-inline-flex align-items-center justify-content-center gap-2 mb-2">
+                <span class="text-sacred-gold fs-5">✤</span>
+                <span class="small fw-bold text-saffron text-uppercase" style="letter-spacing: 1.5px; font-size: 11px;">
+                    Sanctified Shastric Ceremonies
+                </span>
+                <span class="text-sacred-gold fs-5">✤</span>
+            </div>
+            <h1 class="display-5 fw-bold mb-3 font-serif text-dark">
+                Auspicious Vedic Pujas &amp; <span class="text-primary-maroon font-serif">Ceremonies</span>
+            </h1>
+            <p class="lead text-muted-sacred mx-auto mb-0" style="max-width: 680px; font-size: 1.05rem;">
+                Performed strictly according to sacred scriptures with certified Gurukul Pandits, verified Muhurat timing, and 100% consecrated Samagri.
+            </p>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER TOOLBAR -->
+    <div class="stitch-card p-3 mb-5">
+        <div class="row g-3 align-items-center justify-content-between">
+            <!-- CATEGORY FILTER PILLS -->
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap gap-2" id="catalogCategoryPills">
+                    <button class="filter-pill active" data-category="all">
+                        🪔 All Rituals (@Model.Count())
+                    </button>
+                    <button class="filter-pill" data-category="havan">
+                        🔥 Havans &amp; Yagnas
+                    </button>
+                    <button class="filter-pill" data-category="puja">
+                        🙏 Pujas &amp; Kathas
+                    </button>
+                    <button class="filter-pill" data-category="griha">
+                        🏠 Griha Pravesh &amp; Sanskar
+                    </button>
+                    <button class="filter-pill" data-category="jyotish">
+                        🔮 Astrological &amp; Dosha
+                    </button>
+                </div>
+            </div>
+
+            <!-- SEARCH INPUT -->
+            <div class="col-lg-4 position-relative">
+                <div class="input-group">
+                    <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">🔍</span>
+                    <input type="text" id="catalogSearchInput" class="stitch-form-control border-start-0" placeholder="Search puja name or keyword..." autocomplete="off" />
+                    <button type="button" id="catalogClearBtn" class="btn btn-outline-secondary border-start-0 border-sacred d-none text-muted-sacred" title="Clear search">✕</button>
+                </div>
+                <!-- Dynamic Autocomplete Suggestions Dropdown -->
+                <div id="catalogSuggestionsDropdown" class="position-absolute start-0 end-0 bg-white rounded-3 shadow-lg border border-sacred mt-1 p-2 d-none" style="z-index: 1050; max-height: 280px; overflow-y: auto;">
+                    <div class="d-flex justify-content-between align-items-center px-2 py-1 mb-1 border-bottom">
+                        <span class="small fw-bold text-saffron" style="font-size: 11px;">✨ INSTANT SUGGESTIONS</span>
+                        <span class="badge bg-sacred-low text-deep-maroon border border-sacred" id="catalogMatchCount" style="font-size: 10px;">0 Matches</span>
+                    </div>
+                    <div id="catalogSuggestionsList" class="d-flex flex-column gap-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SERVICES GRID -->
+    <div class="row g-4" id="catalogGrid">
+        @foreach (var service in Model)
+        {
+            var category = "puja";
+            var categoryBadge = "Sacred Puja";
+            var serviceImg = "https://lh3.googleusercontent.com/aida-public/AB6AXuDwALmFlRgrVSUEi9SZA_FNJe5VouYEenV6tmjR7WvgKjepf6QVw4E32F9v_zziTXySzK-CKBcK3UDSJXdFzrbQG82TLcGr10nBEKE9HEOladK2ALf6ALbQxLgpJVpFBRYQ3BT5nIPniovonycOptphP-F2Edip2PHwDLj1nsT5PnXN-h1O0vInqJHoy4HtWWMYImReZ-mrjFOQfW7LT17oaLRDhskl1nUSoYNOJateLMv6DyrnrPdDuw";
+
+            if (service.ServiceName.Contains("Havan") || service.ServiceName.Contains("Yagna") || service.ServiceName.Contains("Homa"))
+            {
+                category = "havan";
+                categoryBadge = "Sacred Havan";
+                serviceImg = "https://lh3.googleusercontent.com/aida-public/AB6AXuD71n_wOrYgpdkiFIeQ07y3tz3dNF9wo_GT1GLtPi-34IHTbNNZrhTeY6mfCJfR22_WZlEXJJfCW1fEZwIvdEUoc0L0hAGYKN4e6aduzAYTNg_h-vpU0emBhBsC7HXL6DigWkWO6qNn5G57-yGb70AcIeFp7tVS9j8MGT_SMdtqM8eE4-j-sVVk-3ZiZCg0YSgjqQ-crluQxUlABYJzKdM2mCsb8om9ezNUE09fcOZMgULeMZgGCLQ0lQ";
+            }
+            else if (service.ServiceName.Contains("Jyotish") || service.ServiceName.Contains("Kundali") || service.ServiceName.Contains("Dosha") || service.ServiceName.Contains("Navgraha"))
+            {
+                category = "jyotish";
+                categoryBadge = "Astrology & Dosha";
+                serviceImg = "https://lh3.googleusercontent.com/aida-public/AB6AXuCgJbXqn1c0riIeGD9r5gti3ZkddfzfcYM6XLtckcCYKnbHkIxzEpOlfSzKflfZ0R9wwIHYp0_CILX49apqkCRJWmKZIBPExDMVeKHeiq7zWvQvuREERuqQ3TA0veIbsUqsoTGbEeF8di4WSZ123Zqmeg7bhKPWDE7GNI0BbSbSD6USjqAj7f59cwtjCpgH3vKdE2KJ8KeMMPofBvlBdiE1SQApizZ0cCEbKvj_-0xs27Vo3-AdGswOCQ";
+            }
+            else if (service.ServiceName.Contains("Griha") || service.ServiceName.Contains("Sanskar") || service.ServiceName.Contains("Vastu"))
+            {
+                category = "griha";
+                categoryBadge = "Griha & Sanskar";
+                serviceImg = "https://lh3.googleusercontent.com/aida-public/AB6AXuClr5ttSw-IDZsFC2OogJUa-b0cPnQCMUWFH9fhnPAgaKtq1wiGToC-G7t_PE2s5JzDbvONQjEVGsvsxXaGy7pwy56lMVJ-EA8ysrwkmP84iAhaUOT4fNUw6TmCnYHi9voEuR9ip38dYoKTTuQ4QDGPkyxwkI-udRyAHoNXFuBdBOUoOI807RqgVmrfASD_0heIVn4CeF_4PPnH2JpO5oJEe_dounaDbnimYRKeqa6jQzJfHr8oNZEoCw";
+            }
+            else if (service.ServiceName.Contains("Satyanarayan"))
+            {
+                serviceImg = "https://lh3.googleusercontent.com/aida-public/AB6AXuCF6PJIEfd8R5pKFrkUmBA-pAu4RDvOxUQaj4o6_smwSNRFxG8SFBUNjhN2Cn3XAOtzI8ij142h23kwmQ5_TpDLoWk9hlrbgBoIazNMr6excoB7SoVwfY3t4O24JCoykXPKpq7660tm3OJg9ZDqOQJu6MzCbFsDii-0fZ_aG81RPC6dFhfe7IR6Hl5lUJsXa2VxwvXEu_nm4G5aRO8pisp9A2vqWBXqg61LYI5Tf_whPO3KbT8UwTcAAw";
+            }
+            else if (service.ServiceName.Contains("Maha Mrityunjaya") || service.ServiceName.Contains("Shiva") || service.ServiceName.Contains("Rudra"))
+            {
+                serviceImg = "https://lh3.googleusercontent.com/aida-public/AB6AXuBqMlhZl9RPMREXhVAjuImmi_0Wm3ZGSeL3dqoYw7exvNb3Efc52GUmw4r3WlQP25ua9KuGzewjIhoa_mN4WQZvb_BqwH5Ot1tIi9FFHW7blrOUjETag-q8X_vv2T-k1WuusOH4E-z9kQJCcJzMJU9ztERl1UuSJNM8PvuAU5PdwYOqVn7IpuVGKu779Ve7MXFPp1IZ34JG2KuVA266FzU7Sxw-2Mlrl-6JKd3N2IwUJ7IIotj2NzQZWA";
+            }
+
+            <div class="col-lg-4 col-md-6 catalog-item" data-category="@category" data-name="@service.ServiceName.ToLower()" data-desc="@(service.Description?.ToLower() ?? "")">
+                <div class="stitch-card h-100">
+                    <div class="p-4 pb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge rounded-pill px-3 py-1 bg-sacred-container text-saffron fw-bold small">
+                                @categoryBadge
+                            </span>
+                            <span class="text-muted-sacred small d-flex align-items-center gap-1">
+                                ⏳ @service.Duration Hours
+                            </span>
+                        </div>
+
+                        <!-- Sacred Image Frame -->
+                        <div class="stitch-service-img-wrap">
+                            <img src="@serviceImg" alt="@service.ServiceName" class="stitch-service-img" />
+                        </div>
+
+                        <!-- Title -->
+                        <h3 class="fs-5 fw-bold text-dark text-center mb-2 font-serif">
+                            @service.ServiceName
+                        </h3>
+
+                        <!-- Description -->
+                        <p class="small text-muted-sacred text-center mb-3" style="min-height: 46px; line-height: 1.6;">
+                            @service.Description
+                        </p>
+                    </div>
+
+                    <!-- Checklist Highlights -->
+                    <div class="px-4 py-3 bg-sacred-low border-top border-sacred small text-muted-sacred">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="text-saffron fw-bold">✓</span>
+                            <span>Shastric Sankalp &amp; Consecrated Mantras</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="text-saffron fw-bold">✓</span>
+                            <span>100% Pure Vedic Samagri Included</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-saffron fw-bold">✓</span>
+                            <span>Certified Gurukul Acharya</span>
+                        </div>
+                    </div>
+
+                    <!-- Dakshina & Actions -->
+                    <div class="p-4 mt-auto border-top border-sacred bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <small class="text-muted-sacred d-block fw-semibold" style="font-size: 11px;">Dakshina</small>
+                                <strong class="fs-4 text-primary-maroon font-serif">₹@service.Price.ToString("N0")</strong>
+                            </div>
+                            <span class="badge bg-light text-muted-sacred border rounded-pill px-2 py-1 small">
+                                Fixed Package
+                            </span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@service.ServiceId" class="btn-stitch-outline flex-fill text-center py-2 small" title="View details and vidhi">
+                                View Vidhi
+                            </a>
+                            <a asp-controller="Booking" asp-action="Create" asp-route-serviceId="@service.ServiceId" class="btn-stitch-primary flex-fill text-center py-2 small">
+                                <span>Book Pandit</span>
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- NO SERVICES FOUND SEARCH RESULT -->
+    <div id="noServicesFound" class="text-center py-5 d-none">
+        <div class="fs-1 mb-2">🔍</div>
+        <h4 class="fw-bold text-dark mb-1 font-serif">No Rituals Match Your Search</h4>
+        <p class="text-muted-sacred small">Try searching for a different keyword like "Havan", "Puja", or "Griha".</p>
+        <button type="button" class="btn-stitch-outline px-4 py-2 mt-2" id="resetCatalogFiltersBtn">
+            Reset Filters
+        </button>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var currentCategory = "all";
+
+            function highlightText(text, query) {
+                if (!query) return text;
+                var regex = new RegExp("(" + query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+                return text.replace(regex, '<mark style="background:#fef08a; padding: 0 2px; border-radius: 2px; color: #801818; font-weight: bold;">$1</mark>');
+            }
+
+            function updateCatalogSuggestions(query) {
+                var q = (query || "").trim().toLowerCase();
+                var $dropdown = $("#catalogSuggestionsDropdown");
+                var $list = $("#catalogSuggestionsList");
+                var $count = $("#catalogMatchCount");
+                var $clearBtn = $("#catalogClearBtn");
+
+                if (q.length > 0) {
+                    $clearBtn.removeClass("d-none");
+                } else {
+                    $clearBtn.addClass("d-none");
+                    $dropdown.addClass("d-none");
+                    return;
+                }
+
+                var matches = [];
+                $(".catalog-item").each(function () {
+                    var $el = $(this);
+                    var name = $el.data("name") || "";
+                    var desc = $el.data("desc") || "";
+                    var id = $el.find("a[href*='/Service/Details/']").attr("href") || "#";
+                    var price = $el.find(".price-display").text() || "";
+
+                    if (name.toLowerCase().indexOf(q) !== -1 || desc.toLowerCase().indexOf(q) !== -1) {
+                        matches.push({
+                            name: name,
+                            desc: desc,
+                            url: id,
+                            price: price
+                        });
+                    }
+                });
+
+                $count.text(matches.length + (matches.length === 1 ? " Match" : " Matches"));
+
+                if (matches.length === 0) {
+                    $list.html('<div class="p-2 text-center text-muted small">No sacred ceremonies match "' + $("<div>").text(query).html() + '"</div>');
+                    $dropdown.removeClass("d-none");
+                    return;
+                }
+
+                var html = "";
+                matches.slice(0, 6).forEach(function (m) {
+                    html += '<div class="suggestion-item p-2 rounded-2 hover-elevate border-bottom d-flex align-items-center justify-content-between" style="cursor: pointer; background: #fffcf8;">' +
+                                '<div class="d-flex align-items-center gap-2" style="max-width: 75%;">' +
+                                    '<span class="fs-6">🪔</span>' +
+                                    '<div class="text-truncate">' +
+                                        '<a href="' + m.url + '" class="fw-bold text-deep-maroon small d-block text-decoration-none text-truncate">' + highlightText(m.name, query) + '</a>' +
+                                        '<small class="text-muted text-truncate d-block" style="font-size: 10px;">' + highlightText(m.desc.substring(0, 60), query) + '...</small>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="text-end">' +
+                                    '<span class="badge bg-success-subtle text-success border border-success-subtle small" style="font-size: 10px;">' + m.price + '</span>' +
+                                '</div>' +
+                            '</div>';
+                });
+
+                $list.html(html);
+                $dropdown.removeClass("d-none");
+
+                // Click suggestion row to select
+                $list.find(".suggestion-item").on("click", function (e) {
+                    if (!$(e.target).is("a")) {
+                        var textName = $(this).find("a").text();
+                        $("#catalogSearchInput").val(textName);
+                        filterCatalog();
+                        $dropdown.addClass("d-none");
+                    }
+                });
+            }
+
+            function filterCatalog() {
+                var search = $("#catalogSearchInput").val().toLowerCase().trim();
+                var visibleCount = 0;
+
+                $(".catalog-item").each(function () {
+                    var itemCategory = $(this).data("category");
+                    var name = $(this).data("name");
+                    var desc = $(this).data("desc");
+
+                    var matchCategory = (currentCategory === "all" || itemCategory === currentCategory);
+                    var matchSearch = (!search || name.indexOf(search) !== -1 || desc.indexOf(search) !== -1);
+
+                    if (matchCategory && matchSearch) {
+                        $(this).removeClass("d-none");
+                        visibleCount++;
+                    } else {
+                        $(this).addClass("d-none");
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    $("#noServicesFound").removeClass("d-none");
+                } else {
+                    $("#noServicesFound").addClass("d-none");
+                }
+            }
+
+            $("#catalogCategoryPills .filter-pill").click(function () {
+                $("#catalogCategoryPills .filter-pill").removeClass("active");
+                $(this).addClass("active");
+                currentCategory = $(this).data("category");
+                filterCatalog();
+            });
+
+            $("#catalogSearchInput").on("input keyup", function () {
+                var val = $(this).val();
+                filterCatalog();
+                updateCatalogSuggestions(val);
+            });
+
+            $("#catalogSearchInput").on("focus", function () {
+                var val = $(this).val();
+                if (val && val.trim().length > 0) {
+                    updateCatalogSuggestions(val);
+                }
+            });
+
+            $("#catalogClearBtn").click(function () {
+                $("#catalogSearchInput").val("");
+                $("#catalogClearBtn").addClass("d-none");
+                $("#catalogSuggestionsDropdown").addClass("d-none");
+                filterCatalog();
+            });
+
+            // Close dropdown when clicking outside
+            $(document).on("click", function (e) {
+                if (!$(e.target).closest("#catalogSearchInput, #catalogSuggestionsDropdown").length) {
+                    $("#catalogSuggestionsDropdown").addClass("d-none");
+                }
+            });
+
+            $("#resetCatalogFiltersBtn").click(function () {
+                $("#catalogSearchInput").val("");
+                $("#catalogClearBtn").addClass("d-none");
+                $("#catalogSuggestionsDropdown").addClass("d-none");
+                currentCategory = "all";
+                $("#catalogCategoryPills .filter-pill").removeClass("active");
+                $("#catalogCategoryPills .filter-pill[data-category='all']").addClass("active");
+                filterCatalog();
+            });
+        });
+    </script>
+}

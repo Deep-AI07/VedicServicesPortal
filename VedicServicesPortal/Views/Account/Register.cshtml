@@ -1,0 +1,194 @@
+@model VedicServicesPortal.Models.User
+
+@{
+    ViewData["Title"] = "Create Devotee Account";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="stitch-card shadow-2xl overflow-hidden">
+                <!-- Header -->
+                <div class="d-flex align-items-center justify-content-between p-4"
+                     style="background: linear-gradient(135deg, #801818 0%, #5f0006 100%); color: #fff;">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fs-3 font-serif">ॐ</span>
+                        <div>
+                            <h2 class="fs-5 fw-bold font-serif mb-0 text-white">Create Sacred Devotee Account</h2>
+                            <small style="color: #ffdad6; font-size: 11px;">Faith • Tradition • Blessed Living</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 p-sm-5 bg-white">
+                    <p class="small text-muted-sacred mb-4 text-center">
+                        Register with a unique <strong>Username</strong> to book authentic Shastric Pujas, preserve Gotra details, and consult Gurukul Acharyas.
+                    </p>
+
+                    <form asp-action="Register" method="post" id="registerForm">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 py-2 small mb-3"></div>
+
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="stitch-label">Devotee Full Name *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">👤</span>
+                                <input asp-for="Name" class="stitch-form-control border-start-0" placeholder="e.g. Anand Sharma" required />
+                            </div>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Sacred Devotee Username -->
+                        <div class="mb-3">
+                            <label asp-for="Username" class="stitch-label">Choose Devotee Username (Used for Login) *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">🏷️</span>
+                                <input asp-for="Username" 
+                                       id="regUsernameInput"
+                                       class="stitch-form-control border-start-0" 
+                                       placeholder="e.g. anand_sharma or vivek_dev" 
+                                       autocomplete="username"
+                                       required />
+                            </div>
+                            <small class="text-muted" style="font-size: 11px;">Must be unique. Only letters, numbers, underscores, and dots (no spaces).</small>
+                            <span asp-validation-for="Username" class="text-danger small d-block"></span>
+                        </div>
+
+                        <!-- Email Address -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="stitch-label">Email Address *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">✉️</span>
+                                <input asp-for="Email" 
+                                       type="email" 
+                                       class="stitch-form-control border-start-0" 
+                                       placeholder="devotee@example.com" 
+                                       autocomplete="email"
+                                       required />
+                            </div>
+                            <small class="text-muted" style="font-size: 11px;">Used for booking confirmations and Sankalp receipts.</small>
+                            <span asp-validation-for="Email" class="text-danger small d-block"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-2">
+                            <label asp-for="Password" class="stitch-label">Password *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-sacred-low border-end-0 border-sacred text-muted">🔒</span>
+                                <input asp-for="Password" 
+                                       type="password" 
+                                       id="regPasswordInput"
+                                       class="stitch-form-control border-start-0 border-end-0" 
+                                       placeholder="••••••••" 
+                                       autocomplete="new-password"
+                                       required />
+                                <button type="button" 
+                                        class="btn btn-outline-secondary border-start-0 border-sacred bg-sacred-low text-muted"
+                                        onclick="toggleRegPassword(this)"
+                                        title="Toggle password view">👁️</button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small d-block"></span>
+                        </div>
+
+                        <!-- LIVE PASSWORD COMPLEXITY CHECKLIST -->
+                        <div class="p-3 rounded-3 mb-4" style="background: #fffbf5; border: 1px solid #dfbfbc;">
+                            <div class="small fw-bold text-dark mb-2" style="font-size: 11px; letter-spacing: 0.5px;">
+                                🔐 PASSWORD SECURITY REQUIREMENTS:
+                            </div>
+                            <div class="row g-1 small" style="font-size: 11px;">
+                                <div class="col-6">
+                                    <span id="reqLength" class="text-danger">❌ Min 8 characters</span>
+                                </div>
+                                <div class="col-6">
+                                    <span id="reqUpper" class="text-danger">❌ One capital letter (A-Z)</span>
+                                </div>
+                                <div class="col-6">
+                                    <span id="reqLower" class="text-danger">❌ One lowercase letter (a-z)</span>
+                                </div>
+                                <div class="col-6">
+                                    <span id="reqNumber" class="text-danger">❌ One number (0-9)</span>
+                                </div>
+                                <div class="col-12 mt-1">
+                                    <span id="reqSpecial" class="text-danger">❌ One special symbol (@@$!%*?&#^()_-+=)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnSubmitRegister" class="btn-stitch-primary w-100 py-3 shadow-md mb-3">
+                            <span>Create Sacred Account</span>
+                            <span>→</span>
+                        </button>
+                    </form>
+
+                    <div class="text-center pt-3 border-top border-sacred small text-muted-sacred">
+                        Already have a sacred account?
+                        <a asp-action="Login" class="text-primary-maroon fw-bold text-decoration-none ms-1">
+                            Sign In with Username
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleRegPassword(btn) {
+            const input = document.getElementById('regPasswordInput');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        const pwdInput = document.getElementById('regPasswordInput');
+        const reqLength = document.getElementById('reqLength');
+        const reqUpper = document.getElementById('reqUpper');
+        const reqLower = document.getElementById('reqLower');
+        const reqNumber = document.getElementById('reqNumber');
+        const reqSpecial = document.getElementById('reqSpecial');
+
+        function updatePasswordRules(val) {
+            val = val || "";
+            const hasLength = val.length >= 8;
+            const hasUpper = /[A-Z]/.test(val);
+            const hasLower = /[a-z]/.test(val);
+            const hasNumber = /[0-9]/.test(val);
+            const hasSpecial = /[^a-zA-Z0-9]/.test(val);
+
+            setRuleState(reqLength, hasLength, "Min 8 characters");
+            setRuleState(reqUpper, hasUpper, "One capital letter (A-Z)");
+            setRuleState(reqLower, hasLower, "One lowercase letter (a-z)");
+            setRuleState(reqNumber, hasNumber, "One number (0-9)");
+            setRuleState(reqSpecial, hasSpecial, "One special symbol (@@$!%*?&#^()_-+=)");
+        }
+
+        function setRuleState(el, isMet, label) {
+            if (isMet) {
+                el.className = "text-success fw-bold";
+                el.textContent = "✓ " + label;
+            } else {
+                el.className = "text-danger";
+                el.textContent = "❌ " + label;
+            }
+        }
+
+        pwdInput.addEventListener('input', function () {
+            updatePasswordRules(this.value);
+        });
+
+        // Initialize on load if browser auto-fills
+        if (pwdInput.value) {
+            updatePasswordRules(pwdInput.value);
+        }
+    </script>
+}

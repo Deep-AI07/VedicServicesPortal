@@ -1,0 +1,92 @@
+@model VedicServicesPortal.Models.Pandit
+
+@{
+    ViewData["Title"] = "Pandit Details";
+}
+
+<div class="container mt-5 mb-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="admin-management-card text-center">
+
+                <div class="management-icon">
+                    🧘
+                </div>
+
+                <h1>
+                    @Model.Name
+                </h1>
+
+                @if (Model.IsAvailable)
+                {
+                    <span class="badge bg-success mb-4">
+                        Available
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger mb-4">
+                        Unavailable
+                    </span>
+                }
+
+
+                <div class="text-start mt-3">
+
+                    <p>
+                        <strong>Pandit ID:</strong>
+                        @Model.PanditId
+                    </p>
+
+                    <p>
+                        <strong>Mobile:</strong>
+                        @Model.Mobile
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        @Model.Email
+                    </p>
+
+                    <p>
+                        <strong>Experience:</strong>
+                        @Model.Experience years
+                    </p>
+
+                    <p>
+                        <strong>Specialization:</strong>
+                        @Model.Specialization
+                    </p>
+
+                </div>
+
+
+                <div class="d-flex gap-2 mt-4">
+
+                    <a asp-action="EditPandit"
+                       asp-route-id="@Model.PanditId"
+                       class="btn btn-warning flex-grow-1">
+
+                        Edit
+
+                    </a>
+
+                    <a asp-action="Pandits"
+                       class="btn btn-secondary flex-grow-1">
+
+                        Back
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

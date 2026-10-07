@@ -1,0 +1,490 @@
+@model VedicServicesPortal.Models.SiteSetting
+@{
+    ViewData["Title"] = "Portal Settings & Acharya Desk Configuration";
+}
+
+<div class="container py-4 py-lg-5" style="max-width: 1140px;">
+
+    <!-- HEADER & BREADCRUMB -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <a asp-controller="Admin" asp-action="Dashboard" class="small text-muted-sacred text-decoration-none">
+                    ← Back to Dashboard
+                </a>
+                <span class="text-muted-sacred small">•</span>
+                <span class="badge rounded-pill px-3 py-1 bg-sacred-container text-saffron fw-bold small">
+                    ⚙️ Portal Customization
+                </span>
+            </div>
+            <h1 class="fw-bold mb-1 display-6 font-serif text-dark">
+                Brand &amp; <span class="text-primary-maroon font-serif">Acharya Desk Settings</span>
+            </h1>
+            <p class="text-muted-sacred mb-0">
+                Manually configure portal brand name, descriptions, Contact Acharya Desk helplines, hero copy, and payment details.
+            </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Home" asp-action="Index" target="_blank" class="btn-stitch-secondary py-2 px-3 small">
+                <span>👁️ View Live Website</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION MESSAGES -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4 p-3 d-flex align-items-center gap-3"
+             style="background: #e8f5e9; border-left: 5px solid #2e7d32 !important;">
+            <span class="fs-4">✅</span>
+            <div class="flex-grow-1">
+                <strong class="text-success d-block">Configuration Applied Successfully!</strong>
+                <span class="small text-muted">@TempData["SuccessMessage"]</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- LIVE BRANDING PREVIEW BANNER -->
+    <div class="stitch-card mb-5 p-4" style="background: linear-gradient(135deg, #fff7f2 0%, #fffdfa 100%); border: 1.5px solid #dfbfbc;">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 pb-2 border-bottom" style="border-color: rgba(223, 191, 188, 0.4) !important;">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-saffron fw-bold">✨ LIVE PREVIEW</span>
+                <small class="text-muted-sacred">(Updates as you type in the fields below)</small>
+            </div>
+            <small class="text-muted-sacred">
+                Last modified: <strong>@(Model.LastUpdated.ToLocalTime().ToString("MMM dd, yyyy - hh:mm tt"))</strong>
+            </small>
+        </div>
+
+        <div class="row align-items-center g-3">
+            <div class="col-md-7">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="stitch-brand-badge" style="width: 44px; height: 44px; font-size: 1.4rem;">
+                        <span id="previewOmLogo">@(Model.BrandLogoOm ?? "ॐ")</span>
+                    </div>
+                    <div>
+                        <div class="stitch-brand-name fs-4" id="previewBrandName">@(Model.BrandName ?? "VedicServicesPortal")</div>
+                        <div class="stitch-brand-tagline" id="previewTagline">@(Model.BrandTagline ?? "Faith • Tradition • Blessed Living")</div>
+                    </div>
+                </div>
+                <p class="small text-muted-sacred mb-0 text-truncate" id="previewHeroDesc" style="max-width: 550px;">
+                    @(Model.HeroDescription ?? "Connect with experienced, verified Pandits...")
+                </p>
+            </div>
+            <div class="col-md-5">
+                <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.85); border: 1px solid #dfbfbc;">
+                    <div class="small fw-bold text-deep-maroon mb-1" id="previewDeskTitle">
+                        📞 @(Model.AcharyaDeskTitle ?? "Contact Acharya Desk")
+                    </div>
+                    <div class="small text-muted-sacred">
+                        Helpline: <strong class="text-dark" id="previewPhone">@(Model.ContactPhone ?? "+91 8780495951")</strong>
+                    </div>
+                    <div class="small text-muted-sacred">
+                        Email: <span class="text-dark" id="previewEmail">@(Model.ContactEmail ?? "vivekmaghudiya6@gmail.com")</span>
+                    </div>
+                    <div class="small text-muted-sacred">
+                        Address: <span class="text-dark" id="previewAddress">@(Model.ContactAddress ?? "Ramnagar, Jam-khambhalya")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN FORM -->
+    <form asp-controller="Admin" asp-action="Settings" method="post" enctype="multipart/form-data" id="siteSettingsForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="QrCodeImagePath" />
+
+        <!-- 1. BRAND & IDENTITY SECTION -->
+        <div class="stitch-card mb-4 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom" style="border-color: rgba(223, 191, 188, 0.4) !important;">
+                <span class="fs-4">🪔</span>
+                <div>
+                    <h4 class="fs-5 fw-bold text-dark font-serif mb-0">1. Brand &amp; Visual Identity</h4>
+                    <small class="text-muted-sacred">Controls brand titles, headers, browser titles, and sacred logos</small>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label asp-for="BrandName" class="stitch-label fw-bold">Brand Name *</label>
+                    <input asp-for="BrandName" class="stitch-form-control fw-semibold" id="inputBrandName" placeholder="e.g. VedicServicesPortal" required />
+                    <span asp-validation-for="BrandName" class="text-danger small"></span>
+                    <small class="text-muted" style="font-size: 11px;">Appears on header navigation, footer, title bars, invoices &amp; legal notices.</small>
+                </div>
+
+                <div class="col-md-5">
+                    <label asp-for="BrandTagline" class="stitch-label">Brand Tagline</label>
+                    <input asp-for="BrandTagline" class="stitch-form-control" id="inputTagline" placeholder="e.g. Faith • Tradition • Blessed Living" />
+                    <span asp-validation-for="BrandTagline" class="text-danger small"></span>
+                    <small class="text-muted" style="font-size: 11px;">Sub-label displayed under the logo in header and footer.</small>
+                </div>
+
+                <div class="col-md-2">
+                    <label asp-for="BrandLogoOm" class="stitch-label">Sacred Icon</label>
+                    <input asp-for="BrandLogoOm" class="stitch-form-control text-center fs-5 fw-bold text-primary-maroon" id="inputOmLogo" placeholder="ॐ" maxlength="5" />
+                    <span asp-validation-for="BrandLogoOm" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="SiteDescription" class="stitch-label">Search / Meta Description</label>
+                    <textarea asp-for="SiteDescription" class="stitch-form-control" rows="2" placeholder="Brief SEO description used by search engines..."></textarea>
+                    <span asp-validation-for="SiteDescription" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="BrandStory" class="stitch-label">Brand Story &amp; Mission Narrative (Footer Column 1)</label>
+                    <textarea asp-for="BrandStory" class="stitch-form-control" rows="3" placeholder="Explain your portal mission, heritage and authenticity guarantee..."></textarea>
+                    <span asp-validation-for="BrandStory" class="text-danger small"></span>
+                    <small class="text-muted" style="font-size: 11px;">Displays in the primary footer column explaining the portal's spiritual purpose.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CONTACT ACHARYA DESK SECTION -->
+        <div class="stitch-card mb-4 p-4" style="border-left: 5px solid #a83900 !important;">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom" style="border-color: rgba(223, 191, 188, 0.4) !important;">
+                <span class="fs-4">📞</span>
+                <div>
+                    <h4 class="fs-5 fw-bold text-dark font-serif mb-0">2. Contact Acharya Desk Configuration</h4>
+                    <small class="text-muted-sacred">Customizes the Acharya consultation desk, helplines, support popups, and address</small>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="AcharyaDeskTitle" class="stitch-label fw-bold">Acharya Desk Title *</label>
+                    <input asp-for="AcharyaDeskTitle" class="stitch-form-control fw-semibold" id="inputDeskTitle" placeholder="e.g. Contact Acharya Desk" required />
+                    <span asp-validation-for="AcharyaDeskTitle" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="AcharyaDeskSubtitle" class="stitch-label">Acharya Desk Subtitle / Purpose</label>
+                    <input asp-for="AcharyaDeskSubtitle" class="stitch-form-control" placeholder="e.g. Dedicated Acharya desk for astrological guidance &amp; rituals query." />
+                    <span asp-validation-for="AcharyaDeskSubtitle" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ContactPhone" class="stitch-label fw-bold">Primary Helpline Number *</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-sacred text-saffron">📞</span>
+                        <input asp-for="ContactPhone" class="stitch-form-control" id="inputPhone" placeholder="+91 8780495951" required />
+                    </div>
+                    <span asp-validation-for="ContactPhone" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ContactEmail" class="stitch-label fw-bold">Acharya Desk Email *</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-sacred text-saffron">✉️</span>
+                        <input asp-for="ContactEmail" type="email" class="stitch-form-control" id="inputEmail" placeholder="vivekmaghudiya6@gmail.com" required />
+                    </div>
+                    <span asp-validation-for="ContactEmail" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="EmergencyWhatsApp" class="stitch-label">WhatsApp / Secondary Helpline</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-sacred text-success">💬</span>
+                        <input asp-for="EmergencyWhatsApp" class="stitch-form-control" placeholder="+91 8780495951" />
+                    </div>
+                    <span asp-validation-for="EmergencyWhatsApp" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ContactAddress" class="stitch-label">Office / Temple Physical Address</label>
+                    <input asp-for="ContactAddress" class="stitch-form-control" id="inputAddress" placeholder="e.g. Ramnagar, Jam-khambhalya" />
+                    <span asp-validation-for="ContactAddress" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="HelplineHours" class="stitch-label">Devotee Helpline Hours</label>
+                    <input asp-for="HelplineHours" class="stitch-form-control" placeholder="e.g. 6:00 AM - 9:30 PM (All 7 Days)" />
+                    <span asp-validation-for="HelplineHours" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="AcharyaInquiryResponseTime" class="stitch-label">Inquiry Modal Response Time Commitment Note</label>
+                    <input asp-for="AcharyaInquiryResponseTime" class="stitch-form-control" placeholder="e.g. Our senior Purohit will call your contact number within 4 business hours." />
+                    <span asp-validation-for="AcharyaInquiryResponseTime" class="text-danger small"></span>
+                    <small class="text-muted" style="font-size: 11px;">Shown inside the Contact Acharya Desk inquiry modal popup.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. HERO & HOMEPAGE PRESENTATION -->
+        <div class="stitch-card mb-4 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom" style="border-color: rgba(223, 191, 188, 0.4) !important;">
+                <span class="fs-4">🌟</span>
+                <div>
+                    <h4 class="fs-5 fw-bold text-dark font-serif mb-0">3. Homepage Hero &amp; Trust Highlights</h4>
+                    <small class="text-muted-sacred">Headlines, main intro narrative, and social proof counters</small>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="HeroHeadline" class="stitch-label">Hero Main Headline</label>
+                    <input asp-for="HeroHeadline" class="stitch-form-control" placeholder="e.g. Bring Divine Blessings" />
+                    <span asp-validation-for="HeroHeadline" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="HeroSubheadline" class="stitch-label">Hero Subheadline (Italic Maroon)</label>
+                    <input asp-for="HeroSubheadline" class="stitch-form-control font-serif" placeholder="e.g. Into Your Home" />
+                    <span asp-validation-for="HeroSubheadline" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="HeroDescription" class="stitch-label">Hero Supporting Narrative</label>
+                    <textarea asp-for="HeroDescription" class="stitch-form-control" id="inputHeroDesc" rows="2" placeholder="Connect with experienced, verified Pandits for authentic Vedic rituals..."></textarea>
+                    <span asp-validation-for="HeroDescription" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="TrustStatsText" class="stitch-label">Devotee Trust Review Badge Text</label>
+                    <input asp-for="TrustStatsText" class="stitch-form-control" placeholder="e.g. 4.9/5 from 12,500+ sacred ceremonies performed across India &amp; Diaspora" />
+                    <span asp-validation-for="TrustStatsText" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. PAYMENT & QR CODE MANAGEMENT -->
+        <div class="stitch-card mb-5 p-4" style="border-left: 5px solid #cca830 !important;">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom" style="border-color: rgba(223, 191, 188, 0.4) !important;">
+                <span class="fs-4">💳</span>
+                <div>
+                    <h4 class="fs-5 fw-bold text-dark font-serif mb-0">4. Payment Gateway, UPI VPA &amp; QR Code Image</h4>
+                    <small class="text-muted-sacred">Configure UPI VPA, upload a custom QR code image (PhonePe/GPay/Bank QR), or use auto-generated QR</small>
+                </div>
+            </div>
+
+            <!-- QR CODE UPLOAD & PREVIEW CARD -->
+            <div class="p-4 rounded-4 mb-4 bg-sacred-low border border-sacred">
+                <div class="row align-items-center g-4">
+                    <div class="col-md-4 text-center">
+                        <div class="p-3 bg-white rounded-4 shadow-sm border border-sacred d-inline-block position-relative">
+                            <div class="mb-2">
+                                @if (!string.IsNullOrWhiteSpace(Model.QrCodeImagePath))
+                                {
+                                    <img src="@Model.QrCodeImagePath" id="qrPreviewImg"
+                                         alt="Current Active QR Code"
+                                         class="img-fluid rounded-3"
+                                         style="width: 170px; height: 170px; object-fit: contain;" />
+                                }
+                                else
+                                {
+                                    var cleanAdminUpi = string.IsNullOrWhiteSpace(Model.UpiId) ? "vedicservices@upi" : Model.UpiId.Trim();
+                                    var cleanAdminBrand = string.IsNullOrWhiteSpace(Model.BrandName) ? "Vedic Services Portal" : Model.BrandName.Trim();
+                                    var sampleAdminUpi = $"upi://pay?pa={cleanAdminUpi}&pn={Uri.EscapeDataString(cleanAdminBrand)}&am=2500.00&mam=2500.00&cu=INR&tr=VEDASAMPLE2500&tn={Uri.EscapeDataString("Sacred Puja Dakshina")}&mode=02";
+                                    var sampleAdminQr = $"https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=8&data={Uri.EscapeDataString(sampleAdminUpi)}";
+                                    <img src="@sampleAdminQr" id="qrPreviewImg"
+                                         alt="Auto-Generated UPI QR Code"
+                                         class="img-fluid rounded-3"
+                                         style="width: 170px; height: 170px; object-fit: contain;" />
+                                }
+                            </div>
+                            <span class="badge @(string.IsNullOrWhiteSpace(Model.QrCodeImagePath) ? "bg-secondary" : "bg-success") text-white rounded-pill px-2.5 py-1 small" id="qrModeBadge">
+                                @(string.IsNullOrWhiteSpace(Model.QrCodeImagePath) ? "Auto-Generated QR" : "Custom Uploaded QR")
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <h5 class="fs-6 fw-bold text-dark font-serif mb-2">
+                            📷 Upload Custom QR Code Image (PhonePe / GPay / Paytm / Bank QR)
+                        </h5>
+                        <p class="small text-muted-sacred mb-3">
+                            Upload your official QR code image (PNG, JPG, JPEG, WEBP). Devotees will see this image on the booking checkout page when paying Dakshina. If no custom image is uploaded, an auto-generated QR code for your Sanctum UPI VPA will be shown automatically.
+                        </p>
+
+                        <div class="mb-3">
+                            <label class="stitch-label fw-bold">Select New QR Code Image</label>
+                            <input type="file" name="qrCodeImage" id="qrCodeImageInput" class="stitch-form-control" accept="image/png, image/jpeg, image/jpg, image/webp" onchange="previewUploadedQr(event)" />
+                            <small class="text-muted" style="font-size: 11px;">Recommended format: Clear square image (PNG, JPG, WEBP). Devotees will scan this directly.</small>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.QrCodeImagePath))
+                        {
+                            <div class="form-check p-2.5 rounded-3 bg-white border border-danger-subtle d-inline-flex align-items-center gap-2 mb-2">
+                                <input class="form-check-input ms-0" type="checkbox" name="removeCustomQr" value="true" id="checkRemoveQr" onchange="toggleRemoveQr(event)">
+                                <label class="form-check-label small text-danger fw-semibold" for="checkRemoveQr">
+                                    🗑️ Delete uploaded custom QR and revert to auto-generated QR
+                                </label>
+                            </div>
+                        }
+
+                        <div class="p-2.5 px-3 rounded-3 bg-white border border-sacred">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="text-primary-maroon">💡</span>
+                                <strong class="text-dark small">UPI App Compatibility Recommendation:</strong>
+                            </div>
+                            <p class="small text-muted-sacred mb-0" style="font-size: 11.5px; line-height: 1.4;">
+                                Uploading your official merchant Standee QR (PhonePe / Google Pay / Paytm QR image) is highly recommended as it contains bank-certified signatures recognized immediately by all Indian banking apps. If using auto-generated QR, ensure your UPI ID below is a real active VPA.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="UpiId" class="stitch-label fw-bold">Sanctum UPI VPA / ID *</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-sacred text-saffron">@@</span>
+                        <input asp-for="UpiId" class="stitch-form-control font-monospace" id="inputUpiIdSetting" placeholder="e.g. yourname@upi or bank@upi" required />
+                    </div>
+                    <span asp-validation-for="UpiId" class="text-danger small"></span>
+                    <small class="text-muted" style="font-size: 11px;">Copied by devotees on checkout and used in payment generation.</small>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="GuaranteeBadgeText" class="stitch-label">Shastra Guarantee Badge</label>
+                    <input asp-for="GuaranteeBadgeText" class="stitch-form-control text-uppercase" placeholder="SHASTRA CERTIFIED • AUTHENTICITY GUARANTEE" />
+                    <span asp-validation-for="GuaranteeBadgeText" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="FooterCopyrightText" class="stitch-label">Footer Copyright Subtext</label>
+                    <input asp-for="FooterCopyrightText" class="stitch-form-control" placeholder="Sanctified with devotion &amp; authentic Vedic tradition." />
+                    <span asp-validation-for="FooterCopyrightText" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STICKY ACTION BUTTONS BAR -->
+        <div class="d-flex align-items-center justify-content-between p-3 rounded-4 bg-white shadow-lg border border-sacred sticky-bottom mb-4">
+            <div>
+                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#resetModal">
+                    ↺ Reset to Default Settings
+                </button>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                    Cancel
+                </a>
+                <button type="submit" class="btn-stitch-primary py-2 px-4 shadow-sm">
+                    <span>💾 Save &amp; Apply Changes</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- RESET CONFIRMATION MODAL -->
+    <div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold font-serif text-danger" id="resetModalLabel">⚠️ Reset to Original Defaults?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted-sacred mb-0">
+                        This action will restore the original <strong>VedicServicesPortal</strong> brand name, default descriptions, contact helpline (+91 8780495951), and email address. Any customized changes will be replaced.
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <form asp-controller="Admin" asp-action="ResetSettings" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">
+                            Yes, Reset to Defaults
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- REAL-TIME INTERACTIVE SCRIPT -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const inputBrand = document.getElementById("inputBrandName");
+        const inputTag = document.getElementById("inputTagline");
+        const inputOm = document.getElementById("inputOmLogo");
+        const inputHero = document.getElementById("inputHeroDesc");
+        const inputDesk = document.getElementById("inputDeskTitle");
+        const inputPhone = document.getElementById("inputPhone");
+        const inputEmail = document.getElementById("inputEmail");
+        const inputAddr = document.getElementById("inputAddress");
+
+        const previewBrand = document.getElementById("previewBrandName");
+        const previewTag = document.getElementById("previewTagline");
+        const previewOm = document.getElementById("previewOmLogo");
+        const previewHero = document.getElementById("previewHeroDesc");
+        const previewDesk = document.getElementById("previewDeskTitle");
+        const previewPhone = document.getElementById("previewPhone");
+        const previewEmail = document.getElementById("previewEmail");
+        const previewAddr = document.getElementById("previewAddress");
+
+        if (inputBrand && previewBrand) {
+            inputBrand.addEventListener("input", () => previewBrand.textContent = inputBrand.value || "VedicServicesPortal");
+        }
+        if (inputTag && previewTag) {
+            inputTag.addEventListener("input", () => previewTag.textContent = inputTag.value || "Faith • Tradition • Blessed Living");
+        }
+        if (inputOm && previewOm) {
+            inputOm.addEventListener("input", () => previewOm.textContent = inputOm.value || "ॐ");
+        }
+        if (inputHero && previewHero) {
+            inputHero.addEventListener("input", () => previewHero.textContent = inputHero.value || "Connect with experienced, verified Pandits...");
+        }
+        if (inputDesk && previewDesk) {
+            inputDesk.addEventListener("input", () => previewDesk.textContent = "📞 " + (inputDesk.value || "Contact Acharya Desk"));
+        }
+        if (inputPhone && previewPhone) {
+            inputPhone.addEventListener("input", () => previewPhone.textContent = inputPhone.value || "+91 8780495951");
+        }
+        if (inputEmail && previewEmail) {
+            inputEmail.addEventListener("input", () => previewEmail.textContent = inputEmail.value || "vivekmaghudiya6@gmail.com");
+        }
+        if (inputAddr && previewAddr) {
+            inputAddr.addEventListener("input", () => previewAddr.textContent = inputAddr.value || "Ramnagar, Jam-khambhalya");
+        }
+    });
+
+    function previewUploadedQr(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewImg = document.getElementById("qrPreviewImg");
+                const badge = document.getElementById("qrModeBadge");
+                if (previewImg) {
+                    previewImg.src = e.target.result;
+                }
+                if (badge) {
+                    badge.textContent = "New QR Selected (Ready to Save)";
+                    badge.className = "badge bg-warning text-dark rounded-pill px-2.5 py-1 small";
+                }
+                const checkRemove = document.getElementById("checkRemoveQr");
+                if (checkRemove) {
+                    checkRemove.checked = false;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function toggleRemoveQr(event) {
+        const previewImg = document.getElementById("qrPreviewImg");
+        const badge = document.getElementById("qrModeBadge");
+        const upiId = document.getElementById("inputUpiIdSetting")?.value || "vedicservices@upi";
+        const brand = document.getElementById("inputBrandName")?.value || "VedicServicesPortal";
+        if (event.target.checked) {
+            if (previewImg) {
+                const upiPayload = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(brand)}&am=2500.00&mam=2500.00&cu=INR&tr=VEDASAMPLE2500&tn=Sacred+Puja+Dakshina&mode=02`;
+                previewImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=8&data=${encodeURIComponent(upiPayload)}`;
+            }
+            if (badge) {
+                badge.textContent = "Reverting to Auto-Generated QR";
+                badge.className = "badge bg-secondary text-white rounded-pill px-2.5 py-1 small";
+            }
+        }
+    }
+</script>

@@ -1,0 +1,62 @@
+@model VedicServicesPortal.Models.TimeSlot
+
+@{
+    ViewData["Title"] = "Delete Time Slot";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="account-card">
+                <div class="account-icon">
+                    ⚠️
+                </div>
+
+                <h1>
+                    Delete Time Slot?
+                </h1>
+
+                <p class="text-muted">
+                    Are you sure you want to delete this slot?
+                </p>
+
+                <div class="alert alert-warning text-start">
+                    <strong>
+                        Pandit:
+                    </strong>
+                    @Model.Pandit?.Name
+                    <br />
+                    <strong>
+                        Date:
+                    </strong>
+                    @Model.Date.ToString("dd-MM-yyyy")
+                    <br />
+                    <strong>
+                        Time:
+                    </strong>
+                    @Model.StartTime - @Model.EndTime
+                </div>
+
+                <form asp-action="DeleteTimeSlot"
+                      asp-route-id="@Model.SlotId"
+                      method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.SlotId" />
+
+                    <div class="d-flex gap-2">
+                        <button type="submit"
+                                class="btn btn-danger flex-grow-1">
+                            Yes, Delete
+                        </button>
+                        <a asp-action="TimeSlots"
+                           class="btn btn-secondary flex-grow-1">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

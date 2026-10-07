@@ -1,0 +1,433 @@
+@model IEnumerable<VedicServicesPortal.Models.Booking>
+
+@{
+    ViewData["Title"] = "My Bookings - Devotee Portal";
+    var hasActiveFilters = !string.IsNullOrEmpty(ViewBag.SearchName) ||
+                           !string.IsNullOrEmpty(ViewBag.SearchDate) ||
+                           (!string.IsNullOrEmpty(ViewBag.Category) && ViewBag.Category != "all") ||
+                           !string.IsNullOrEmpty(ViewBag.Vidhi);
+}
+
+<div class="container py-5" style="max-width: 1100px;">
+
+    <!-- HEADER -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 mb-2">
+                <span class="text-saffron">📋</span>
+                <span class="small fw-bold text-saffron text-uppercase" style="letter-spacing: 1px; font-size: 11px;">
+                    Devotee Sacred Portal
+                </span>
+            </div>
+            <h1 class="display-5 fw-bold text-dark font-serif mb-1">
+                My <span class="text-primary-maroon font-serif">Ceremonies &amp; Bookings</span>
+            </h1>
+            <p class="text-muted-sacred mb-0">
+                View, filter, and manage your scheduled Vedic rituals, purohit assignments, and auspicious muhurats.
+            </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge rounded-pill px-3 py-2 bg-sacred-container text-deep-maroon fw-bold small" id="totalCeremoniesBadge">
+                Total Ceremonies: @(Model?.Count() ?? 0)
+            </span>
+            <a asp-controller="Service" asp-action="Index" class="btn-stitch-primary py-2 px-4 small shadow-xs">
+                <span>+ Book New Ritual</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- SUCCESS & ERROR MESSAGES -->
+    @if (TempData["Success"] != null || TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 small d-flex align-items-center gap-2">
+            <span>✓</span>
+            <span>@(TempData["Success"] ?? TempData["SuccessMessage"])</span>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-4 small d-flex align-items-center gap-2">
+            <span>⚠️</span>
+            <span>@TempData["ErrorMessage"]</span>
+        </div>
+    }
+
+    <!-- =========================================================================
+         SACRED BOOKING FILTERS: NAME, DATE, CATEGORY, VIDHI
+         ========================================================================= -->
+    <div class="stitch-card p-4 mb-4 shadow-sm border border-sacred">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fs-5">🔍</span>
+                <strong class="font-serif text-dark fs-6">Filter &amp; Search Bookings</strong>
+            </div>
+            @if (hasActiveFilters)
+            {
+                <span class="badge bg-warning-subtle text-warning-emphasis px-2.5 py-1 small rounded-pill">
+                    ● Active Filters Applied
+                </span>
+            }
+        </div>
+
+        <form method="get" asp-action="MyBookings" id="bookingFilterForm">
+            <div class="row g-3">
+                <!-- 1. SEARCH BY NAME (Pandit or Devotee / Address) -->
+                <div class="col-md-3">
+                    <label class="stitch-label small fw-bold text-dark mb-1 d-flex align-items-center gap-1.5" for="filterSearchName">
+                        <span>👤</span> <span>Search by Name</span>
+                    </label>
+                    <div class="position-relative">
+                        <input type="text"
+                               name="searchName"
+                               id="filterSearchName"
+                               class="stitch-form-control"
+                               placeholder="Pandit or venue..."
+                               value="@ViewBag.SearchName"
+                               autocomplete="off" />
+                        <span class="position-absolute end-0 top-50 translate-middle-y pe-2.5 text-muted small cursor-pointer @(string.IsNullOrEmpty(ViewBag.SearchName) ? "d-none" : "")"
+                              id="btnClearName"
+                              onclick="clearFilterInput('filterSearchName', 'btnClearName')">✕</span>
+                    </div>
+                </div>
+
+                <!-- 2. SEARCH BY DATE -->
+                <div class="col-md-3">
+                    <label class="stitch-label small fw-bold text-dark mb-1 d-flex align-items-center gap-1.5" for="filterSearchDate">
+                        <span>📅</span> <span>Ceremony Date</span>
+                    </label>
+                    <input type="date"
+                           name="searchDate"
+                           id="filterSearchDate"
+                           class="stitch-form-control"
+                           value="@ViewBag.SearchDate" />
+                </div>
+
+                <!-- 3. SEARCH BY CATEGORY -->
+                <div class="col-md-3">
+                    <label class="stitch-label small fw-bold text-dark mb-1 d-flex align-items-center gap-1.5" for="filterCategory">
+                        <span>🪔</span> <span>Ritual Category</span>
+                    </label>
+                    <select name="category" id="filterCategory" class="stitch-form-control form-select">
+                        <option value="all" selected="@(ViewBag.Category == "all" || string.IsNullOrEmpty(ViewBag.Category))">All Categories (सर्व वर्ग)</option>
+                        <option value="puja" selected="@(ViewBag.Category == "puja")">🪔 Sacred Puja (पूजा)</option>
+                        <option value="havan" selected="@(ViewBag.Category == "havan")">🔥 Sacred Havan &amp; Homa (हवन)</option>
+                        <option value="jyotish" selected="@(ViewBag.Category == "jyotish")">🔮 Astrology &amp; Dosha (ज्योतिष / दोष)</option>
+                        <option value="griha" selected="@(ViewBag.Category == "griha")">🏠 Griha &amp; Sanskar (गृह / संस्कार)</option>
+                    </select>
+                </div>
+
+                <!-- 4. SEARCH BY VIDHI (SPECIFIC CEREMONY) -->
+                <div class="col-md-3">
+                    <label class="stitch-label small fw-bold text-dark mb-1 d-flex align-items-center gap-1.5" for="filterVidhi">
+                        <span>✨</span> <span>Ceremony / Vidhi</span>
+                    </label>
+                    <select name="vidhi" id="filterVidhi" class="stitch-form-control form-select">
+                        <option value="" selected="@(string.IsNullOrEmpty(ViewBag.Vidhi))">All Vidhis (समस्त विधि)</option>
+                        @if (ViewBag.AllServices != null)
+                        {
+                            foreach (var s in (IEnumerable<VedicServicesPortal.Models.Service>)ViewBag.AllServices)
+                            {
+                                <option value="@s.ServiceName" selected="@(ViewBag.Vidhi == s.ServiceName)">@s.ServiceName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- CONTROLS & LIVE COUNTER BAR -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 border-top border-sacred gap-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span id="filteredCountBadge" class="badge rounded-pill bg-sacred-container text-deep-maroon fw-bold px-3 py-1.5">
+                        Showing @(Model?.Count() ?? 0) Bookings
+                    </span>
+                    <small class="text-muted-sacred" style="font-size: 11.5px;">⚡ Filters update instantly as you type or change options</small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn-stitch-primary py-1.5 px-3 small d-inline-flex align-items-center gap-1.5 shadow-xs">
+                        <span>🔍</span>
+                        <span>Apply Filters</span>
+                    </button>
+                    <a asp-action="MyBookings" class="btn btn-sm btn-outline-secondary py-1.5 px-3 rounded-pill" title="Reset all search filters">
+                        ↺ Reset All
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- NO BOOKINGS AT ALL (INITIAL EMPTY STATE) -->
+    @if (Model == null || !Model.Any())
+    {
+        @if (hasActiveFilters)
+        {
+            <!-- FILTER RETURNED ZERO RESULTS -->
+            <div class="stitch-card p-5 text-center my-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-sacred-container rounded-circle mb-3"
+                     style="width: 80px; height: 80px; font-size: 38px; color: #801818;">
+                    🔍
+                </div>
+                <h3 class="fs-4 fw-bold font-serif text-dark mb-2">No Matching Sacred Bookings</h3>
+                <p class="text-muted-sacred mx-auto mb-4" style="max-width: 480px;">
+                    None of your ceremony bookings match the selected filters (Name: "@ViewBag.SearchName", Date: "@ViewBag.SearchDate", Category: "@ViewBag.Category", Vidhi: "@ViewBag.Vidhi").
+                </p>
+                <div>
+                    <a asp-action="MyBookings" class="btn-stitch-primary py-2.5 px-4 shadow-md">
+                        <span>↺ Clear All Filters</span>
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="stitch-card p-5 text-center my-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-sacred-container rounded-circle mb-3"
+                     style="width: 84px; height: 84px; font-size: 40px; color: #801818;">
+                    📭
+                </div>
+                <h3 class="fs-4 fw-bold font-serif text-dark mb-2">No Sacred Bookings Yet</h3>
+                <p class="text-muted-sacred mx-auto mb-4" style="max-width: 480px;">
+                    You have not booked any Vedic service or puja ritual yet. Invite divine blessings, prosperity, and peace into your home today.
+                </p>
+                <div>
+                    <a asp-controller="Service" asp-action="Index" class="btn-stitch-primary py-3 px-5 shadow-md">
+                        <span>Explore Sacred Services Catalog</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <!-- CLIENT-SIDE DYNAMIC NO RESULTS PLACEHOLDER -->
+        <div id="filterNoResults" class="stitch-card p-5 text-center my-4 d-none">
+            <div class="d-inline-flex align-items-center justify-content-center bg-sacred-container rounded-circle mb-3"
+                 style="width: 72px; height: 72px; font-size: 34px; color: #801818;">
+                🔍
+            </div>
+            <h4 class="fs-5 fw-bold font-serif text-dark mb-2">No Bookings Match Filter Criteria</h4>
+            <p class="text-muted-sacred mx-auto mb-3" style="max-width: 420px; font-size: 13px;">
+                No scheduled rituals match your current combination of Name, Date, Category, or Vidhi.
+            </p>
+            <button type="button" class="btn btn-sm btn-outline-sacred rounded-pill px-3 py-1.5" onclick="resetAllClientFilters()">
+                ↺ Reset All Filters
+            </button>
+        </div>
+
+        <!-- BOOKINGS GRID -->
+        <div class="row g-4" id="bookingsGrid">
+            @foreach (var booking in Model)
+            {
+                var statusClass = "bg-warning-subtle text-warning-emphasis";
+
+                if (booking.Status == "Confirmed")
+                {
+                    statusClass = "bg-success-subtle text-success";
+                }
+                else if (booking.Status == "Completed")
+                {
+                    statusClass = "bg-primary-subtle text-primary";
+                }
+                else if (booking.Status == "Cancelled")
+                {
+                    statusClass = "bg-danger-subtle text-danger";
+                }
+
+                var catKey = ServiceCategoryHelper.GetCategoryKey(booking.Service?.ServiceName);
+                var catDisplay = ServiceCategoryHelper.GetCategoryDisplayName(catKey);
+                var catIcon = ServiceCategoryHelper.GetCategoryIcon(catKey);
+                var ceremonyDateIso = booking.TimeSlot?.Date.ToString("yyyy-MM-dd") ?? booking.BookingDate.ToString("yyyy-MM-dd");
+                var ceremonyDateDisplay = booking.TimeSlot?.Date.ToString("dd-MM-yyyy") ?? booking.BookingDate.ToString("dd-MM-yyyy");
+                var searchBlob = $"{booking.Pandit?.Name} {booking.Address} {booking.Service?.ServiceName}".ToLower();
+
+                <div class="col-md-6 col-lg-4 booking-card-col"
+                     data-name="@searchBlob"
+                     data-date="@ceremonyDateIso"
+                     data-category="@catKey"
+                     data-vidhi="@(booking.Service?.ServiceName?.ToLower() ?? "")">
+                    <div class="stitch-card h-100 p-4 d-flex flex-column">
+                        <!-- CARD TOP: ID & STATUS -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge rounded-pill px-3 py-1 bg-sacred-low text-muted-sacred border border-sacred fw-bold small">
+                                #VEDA-@booking.BookingId
+                            </span>
+                            <span class="badge rounded-pill px-3 py-1 fw-bold small @statusClass">
+                                ● @booking.Status
+                            </span>
+                        </div>
+
+                        <!-- CATEGORY TAG -->
+                        <div class="mb-2">
+                            <span class="badge rounded-pill bg-sacred-low text-deep-maroon border border-sacred px-2.5 py-0.5" style="font-size: 10px;">
+                                @catIcon @catDisplay
+                            </span>
+                        </div>
+
+                        <!-- SERVICE TITLE -->
+                        <h3 class="fs-5 fw-bold text-dark font-serif mb-2">
+                            @(booking.Service?.ServiceName ?? "Vedic Ceremony")
+                        </h3>
+
+                        <!-- DAKSHINA & PAYMENT BADGE -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="fs-4 fw-bold text-primary-maroon font-serif">
+                                ₹@booking.TotalAmount.ToString("N0")
+                            </div>
+                            <div>
+                                @if (booking.PaymentMethod == "UPI")
+                                {
+                                    <span class="badge rounded-pill px-2.5 py-1 bg-primary text-white small fw-bold">
+                                        📱 UPI
+                                    </span>
+                                }
+                                else if (booking.PaymentMethod == "Card")
+                                {
+                                    <span class="badge rounded-pill px-2.5 py-1 bg-dark text-white small fw-bold">
+                                        💳 Card
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill px-2.5 py-1 bg-warning text-dark small fw-bold">
+                                        🪔 Cash on Completion
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- DETAILS LIST -->
+                        <div class="p-3 rounded-3 bg-sacred-low border border-sacred small text-muted-sacred mb-3 space-y-1">
+                            <div class="mb-1 text-truncate">
+                                <strong class="text-dark">🧘 Pandit:</strong> @(booking.Pandit?.Name ?? "Assigned Vedic Acharya")
+                            </div>
+                            <div class="mb-1">
+                                <strong class="text-dark">📅 Date:</strong> @ceremonyDateDisplay
+                            </div>
+                            <div class="mb-1">
+                                <strong class="text-dark">🕐 Muhurat:</strong> @(booking.TimeSlot != null ? booking.TimeSlot.StartTime + " - " + booking.TimeSlot.EndTime : "Abhijit Muhurat")
+                            </div>
+                            <div class="mb-1 text-truncate">
+                                <strong class="text-dark">💳 Mode:</strong> @(booking.PaymentMethod == "UPI" ? "UPI (QR Verified)" : booking.PaymentMethod == "Card" ? "Debit/Credit Card" : "Cash on Completion")
+                            </div>
+                            <div class="text-truncate">
+                                <strong class="text-dark">📍 Venue:</strong> @booking.Address
+                            </div>
+                        </div>
+
+                        <!-- FOOTER ACTIONS -->
+                        <div class="mt-auto pt-3 border-top border-sacred d-flex justify-content-between align-items-center text-muted-sacred small" style="font-size: 11px;">
+                            <span>@booking.CreatedAt.ToString("dd MMM yyyy")</span>
+                            <div class="d-flex gap-2 align-items-center">
+                                @if (booking.Status == "Confirmed" || booking.Status == "Completed")
+                                {
+                                    <a asp-controller="Booking" asp-action="Invoice" asp-route-id="@booking.BookingId" class="badge bg-light text-deep-maroon border border-sacred px-2 py-1 text-decoration-none" target="_blank" title="View, Print &amp; Download Consecrated Invoice">
+                                        📜 Invoice / PDF
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-dark border px-2 py-1" title="Invoice generated only after payment is completed">
+                                        ⏳ Unpaid (No Invoice)
+                                    </span>
+                                }
+                                <a asp-controller="Booking" asp-action="Confirmation" asp-route-id="@booking.BookingId" class="text-primary-maroon fw-bold text-decoration-none">
+                                    Details →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    <script>
+        // Real-Time Instant Filtering Engine
+        function runClientBookingFilters() {
+            const nameVal = (document.getElementById('filterSearchName')?.value || '').trim().toLowerCase();
+            const dateVal = (document.getElementById('filterSearchDate')?.value || '').trim();
+            const catVal = (document.getElementById('filterCategory')?.value || 'all').trim().toLowerCase();
+            const vidhiVal = (document.getElementById('filterVidhi')?.value || '').trim().toLowerCase();
+
+            // Toggle clear button for name
+            const btnClear = document.getElementById('btnClearName');
+            if (btnClear) {
+                if (nameVal.length > 0) btnClear.classList.remove('d-none');
+                else btnClear.classList.add('d-none');
+            }
+
+            const cards = document.querySelectorAll('.booking-card-col');
+            let matchedCount = 0;
+
+            cards.forEach(card => {
+                const cName = card.getAttribute('data-name') || '';
+                const cDate = card.getAttribute('data-date') || '';
+                const cCat = card.getAttribute('data-category') || '';
+                const cVidhi = card.getAttribute('data-vidhi') || '';
+
+                const matchName = !nameVal || cName.includes(nameVal);
+                const matchDate = !dateVal || cDate === dateVal;
+                const matchCat = catVal === 'all' || cCat === catVal;
+                const matchVidhi = !vidhiVal || cVidhi.includes(vidhiVal);
+
+                if (matchName && matchDate && matchCat && matchVidhi) {
+                    card.classList.remove('d-none');
+                    matchedCount++;
+                } else {
+                    card.classList.add('d-none');
+                }
+            });
+
+            // Update badge count
+            const countBadge = document.getElementById('filteredCountBadge');
+            if (countBadge) {
+                countBadge.innerText = `Showing ${matchedCount} of ${cards.length} Bookings`;
+            }
+
+            // Show / hide no results placeholder
+            const noResultsPlaceholder = document.getElementById('filterNoResults');
+            if (noResultsPlaceholder) {
+                if (matchedCount === 0 && cards.length > 0) {
+                    noResultsPlaceholder.classList.remove('d-none');
+                } else {
+                    noResultsPlaceholder.classList.add('d-none');
+                }
+            }
+        }
+
+        // Live Event Listeners
+        document.getElementById('filterSearchName')?.addEventListener('input', runClientBookingFilters);
+        document.getElementById('filterSearchDate')?.addEventListener('change', runClientBookingFilters);
+        document.getElementById('filterCategory')?.addEventListener('change', runClientBookingFilters);
+        document.getElementById('filterVidhi')?.addEventListener('change', runClientBookingFilters);
+
+        function clearFilterInput(inputId, clearBtnId) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = '';
+                document.getElementById(clearBtnId)?.classList.add('d-none');
+                runClientBookingFilters();
+            }
+        }
+
+        function resetAllClientFilters() {
+            const nameEl = document.getElementById('filterSearchName');
+            const dateEl = document.getElementById('filterSearchDate');
+            const catEl = document.getElementById('filterCategory');
+            const vidhiEl = document.getElementById('filterVidhi');
+
+            if (nameEl) nameEl.value = '';
+            if (dateEl) dateEl.value = '';
+            if (catEl) catEl.value = 'all';
+            if (vidhiEl) vidhiEl.value = '';
+
+            document.getElementById('btnClearName')?.classList.add('d-none');
+            runClientBookingFilters();
+        }
+    </script>
+}

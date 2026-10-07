@@ -1,0 +1,116 @@
+@model VedicServicesPortal.Models.Booking
+
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="account-card">
+                <div class="account-icon">📋</div>
+                <h1>Booking #@Model.BookingId</h1>
+                <p class="account-subtitle">Complete booking and payment information</p>
+
+                <hr />
+
+                <!-- CUSTOMER -->
+                <h4 class="mt-4">👤 Customer</h4>
+                <p><strong>Name:</strong> @Model.User?.Name</p>
+                <p><strong>Email:</strong> @Model.User?.Email</p>
+
+                <!-- PANDIT -->
+                <h4 class="mt-4">🧘 Pandit</h4>
+                <p><strong>Name:</strong> @Model.Pandit?.Name</p>
+                <p><strong>Mobile:</strong> @Model.Pandit?.Mobile</p>
+
+                <!-- SERVICE -->
+                <h4 class="mt-4">🪔 Service</h4>
+                <p><strong>Service:</strong> @Model.Service?.ServiceName</p>
+                <p><strong>Price:</strong> ₹@Model.Service?.Price</p>
+                <p><strong>Duration:</strong> @Model.Service?.Duration hours</p>
+
+                <!-- SLOT -->
+                <h4 class="mt-4">🕐 Time Slot</h4>
+                @if (Model.TimeSlot != null)
+                {
+                    <p><strong>Date:</strong> @Model.TimeSlot.Date.ToString("dd-MM-yyyy")</p>
+                    <p><strong>Time:</strong> @Model.TimeSlot.StartTime - @Model.TimeSlot.EndTime</p>
+                }
+
+                <!-- BOOKING -->
+                <h4 class="mt-4">📋 Booking &amp; Payment Information</h4>
+                <p><strong>Booking Date:</strong> @Model.BookingDate.ToString("dd-MM-yyyy")</p>
+                <p><strong>Address:</strong> @Model.Address</p>
+                <p><strong>Total Amount:</strong> ₹@Model.TotalAmount</p>
+                <p>
+                    <strong>Payment Method:</strong>
+                    <span class="badge bg-light text-dark border p-2">
+                        @(Model.PaymentMethod == "UPI" ? "📱 UPI with QR (Verified)" : Model.PaymentMethod == "Card" ? "💳 Debit/Credit Card (Authorized)" : "🪔 Cash on Completion (Pay After Puja)")
+                    </span>
+                </p>
+                <p>
+                    <strong>Status:</strong>
+                    @if (Model.Status == "Pending")
+                    {
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    }
+                    else if (Model.Status == "Confirmed")
+                    {
+                        <span class="badge bg-primary">Confirmed</span>
+                    }
+                    else if (Model.Status == "Completed")
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else if (Model.Status == "Cancelled")
+                    {
+                        <span class="badge bg-danger">Cancelled</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Model.Status</span>
+                    }
+                </p>
+
+                <hr />
+
+                <!-- ACTIONS -->
+                <div class="d-flex flex-wrap gap-2 mt-4 align-items-center">
+                    <a asp-action="Invoice" asp-route-id="@Model.BookingId" target="_blank" class="btn btn-outline-dark font-weight-bold mr-2 mb-2">
+                        📜 Print &amp; Download Invoice (PDF)
+                    </a>
+
+                    @if (Model.Status == "Pending")
+                    {
+                        <form asp-action="ConfirmBooking" method="post" class="mr-2 mb-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.BookingId" />
+                            <button type="submit" class="btn btn-primary">Confirm</button>
+                        </form>
+                    }
+
+                    @if (Model.Status == "Confirmed")
+                    {
+                        <form asp-action="CompleteBooking" method="post" class="mr-2 mb-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.BookingId" />
+                            <button type="submit" class="btn btn-success">Complete</button>
+                        </form>
+                    }
+
+                    @if (Model.Status != "Completed" && Model.Status != "Cancelled")
+                    {
+                        <form asp-action="CancelBooking" method="post" class="mr-2 mb-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.BookingId" />
+                            <button type="submit" class="btn btn-danger">Cancel</button>
+                        </form>
+                    }
+
+                    <a asp-action="Bookings" class="btn btn-secondary mb-2">Back to Bookings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

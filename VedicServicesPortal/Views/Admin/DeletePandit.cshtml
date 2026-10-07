@@ -1,0 +1,55 @@
+@model VedicServicesPortal.Models.Pandit
+
+@{
+    ViewData["Title"] = "Delete Pandit";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="account-card">
+                <div class="account-icon">
+                    ⚠️
+                </div>
+
+                <h1>
+                    Delete Pandit?
+                </h1>
+
+                <p class="text-muted">
+                    Are you sure you want to delete this Pandit?
+                </p>
+
+                <div class="alert alert-warning text-start">
+                    <strong>
+                        @Model.Name
+                    </strong>
+                    <br />
+                    Mobile: @Model.Mobile
+                    <br />
+                    Specialization: @Model.Specialization
+                </div>
+
+                <form asp-action="DeletePandit"
+                      asp-route-id="@Model.PanditId"
+                      method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.PanditId" />
+
+                    <div class="d-flex gap-2">
+                        <button type="submit"
+                                class="btn btn-danger flex-grow-1">
+                            Yes, Delete
+                        </button>
+                        <a asp-action="Pandits"
+                           class="btn btn-secondary flex-grow-1">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,187 @@
+@model VedicServicesPortal.Models.TimeSlot
+
+@{
+    ViewData["Title"] = "Add Time Slot";
+}
+
+<div class="container mt-5 mb-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="account-card">
+
+                <div class="account-icon">
+                    🕐
+                </div>
+
+                <h1>
+                    Add Time Slot
+                </h1>
+
+                <p class="account-subtitle">
+                    Create a booking slot for a Pandit.
+                </p>
+
+
+                <form asp-action="CreateTimeSlot"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3">
+                    </div>
+
+
+                    <!-- PANDIT -->
+
+                    <div class="form-section">
+
+                        <label asp-for="PanditId"
+                               class="form-label">
+
+                            Select Pandit
+
+                        </label>
+
+                        <select asp-for="PanditId"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Pandit --
+                            </option>
+
+                            @foreach (var pandit in ViewBag.Pandits)
+                            {
+                                <option value="@pandit.PanditId">
+                                    @pandit.Name
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="PanditId"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- DATE -->
+
+                    <div class="form-section">
+
+                        <label asp-for="Date"
+                               class="form-label">
+
+                            Date
+
+                        </label>
+
+                        <input asp-for="Date"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="Date"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- START TIME -->
+
+                    <div class="form-section">
+
+                        <label asp-for="StartTime"
+                               class="form-label">
+
+                            Start Time
+
+                        </label>
+
+                        <input asp-for="StartTime"
+                               type="time"
+                               class="form-control" />
+
+                        <span asp-validation-for="StartTime"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- END TIME -->
+
+                    <div class="form-section">
+
+                        <label asp-for="EndTime"
+                               class="form-label">
+
+                            End Time
+
+                        </label>
+
+                        <input asp-for="EndTime"
+                               type="time"
+                               class="form-control" />
+
+                        <span asp-validation-for="EndTime"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- BOOKED -->
+
+                    <div class="form-check mb-4">
+
+                        <input asp-for="IsBooked"
+                               class="form-check-input" />
+
+                        <label asp-for="IsBooked"
+                               class="form-check-label">
+
+                            Mark as Booked
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary flex-grow-1">
+
+                            Add Time Slot
+
+                        </button>
+
+                        <a asp-action="TimeSlots"
+                           class="btn btn-secondary">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

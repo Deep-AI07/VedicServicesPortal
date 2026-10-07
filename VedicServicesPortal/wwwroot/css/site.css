@@ -1,0 +1,1026 @@
+/* ==========================================================================
+   VEDIC SERVICES PORTAL - STITCH DESIGN SYSTEM
+   Faith • Tradition • Blessed Living
+   ========================================================================== */
+
+:root {
+    --color-primary: #5f0006;
+    --color-primary-container: #801818;
+    --color-on-primary: #ffffff;
+    --color-on-primary-container: #ff8d84;
+    --color-secondary: #a83900;
+    --color-secondary-container: #fc6018;
+    --color-tertiary: #735c00;
+    --color-tertiary-container: #cca830;
+    --color-tertiary-fixed: #ffe088;
+    --color-tertiary-fixed-dim: #e9c349;
+    --color-surface: #fff8f5;
+    --color-surface-dim: #f1d5c2;
+    --color-surface-bright: #fff8f5;
+    --color-surface-container-lowest: #ffffff;
+    --color-surface-container-low: #fff1e9;
+    --color-surface-container: #ffeadc;
+    --color-surface-container-high: #ffe3d0;
+    --color-surface-container-highest: #faddca;
+    --color-surface-variant: #faddca;
+    --color-on-surface: #27180d;
+    --color-on-surface-variant: #58413f;
+    --color-outline: #8b716e;
+    --color-outline-variant: #dfbfbc;
+    --color-background: #fff8f5;
+
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Base Document */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-on-surface);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    background-color: #ffeadc;
+    color: #5f0006;
+}
+
+/* Typography Utilities */
+.font-playfair, .font-serif, h1, h2, h3, .brand-title {
+    font-family: var(--font-serif);
+}
+
+.font-jakarta, .font-sans {
+    font-family: var(--font-sans);
+}
+
+.text-primary-maroon {
+    color: #801818 !important;
+}
+
+.text-deep-maroon {
+    color: #5f0006 !important;
+}
+
+.text-saffron {
+    color: #a83900 !important;
+}
+
+.text-sacred-gold {
+    color: #cca830 !important;
+}
+
+.text-muted-sacred {
+    color: #58413f !important;
+}
+
+.bg-sacred-surface {
+    background-color: var(--color-surface) !important;
+}
+
+.bg-sacred-container {
+    background-color: var(--color-surface-container) !important;
+}
+
+.bg-sacred-low {
+    background-color: var(--color-surface-container-low) !important;
+}
+
+.border-sacred {
+    border-color: var(--color-outline-variant) !important;
+}
+
+/* Background Mandala Watermark */
+.mandala-watermark {
+    background-image: radial-gradient(circle at center, rgba(217, 119, 6, 0.08) 0%, transparent 70%);
+}
+
+/* Sacred Ambient Glow Orbs */
+.ambient-glow-top {
+    position: absolute;
+    top: 0;
+    right: 20%;
+    width: 380px;
+    height: 380px;
+    background: rgba(255, 224, 136, 0.28);
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ambient-glow-bottom {
+    position: absolute;
+    bottom: -40px;
+    left: 5%;
+    width: 340px;
+    height: 340px;
+    background: rgba(255, 227, 208, 0.45);
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ==========================================================================
+   TOP STICKY NAVBAR (STITCH REPLICATION)
+   ========================================================================== */
+.stitch-navbar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1030;
+    background: rgba(255, 248, 245, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(223, 191, 188, 0.45);
+    box-shadow: 0 4px 20px -2px rgba(128, 24, 24, 0.06);
+    transition: all 0.3s ease;
+}
+
+.stitch-nav-inner {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 74px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Brand Lockup */
+.stitch-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.stitch-brand-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffeadc;
+    border: 1px solid #dfbfbc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(128, 24, 24, 0.08);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+.stitch-brand:hover .stitch-brand-badge {
+    transform: scale(1.06);
+}
+
+.stitch-brand-om {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #5f0006;
+    line-height: 1;
+}
+
+.stitch-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.stitch-brand-name {
+    font-family: var(--font-serif);
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: #5f0006;
+    line-height: 1.1;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.stitch-brand-tagline {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #a83900;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    white-space: nowrap;
+}
+
+/* Desktop Nav Links */
+.stitch-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    white-space: nowrap;
+}
+
+.stitch-nav-link {
+    font-family: var(--font-sans);
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #58413f;
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 4px;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+}
+
+.stitch-nav-link:hover {
+    color: #5f0006;
+}
+
+.stitch-nav-link.active {
+    color: #5f0006;
+    font-weight: 700;
+    border-bottom: 2px solid #5f0006;
+}
+
+/* Badges */
+.stitch-badge-pill {
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 9999px;
+    background: #801818;
+    color: #fff;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* Buttons System */
+.btn-stitch-primary, .btn-vedic-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    background: linear-gradient(135deg, #801818 0%, #5f0006 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    font-weight: 600;
+    padding: 0.55rem 1.4rem;
+    font-size: 0.88rem;
+    box-shadow: 0 4px 14px rgba(128, 24, 24, 0.22);
+    transition: all 0.25s ease;
+    text-decoration: none !important;
+    cursor: pointer;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+.btn-stitch-primary:hover, .btn-vedic-primary:hover {
+    background: linear-gradient(135deg, #5f0006 0%, #3e0004 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(128, 24, 24, 0.32);
+    color: #ffffff !important;
+}
+
+.btn-stitch-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: 1.5px solid #801818 !important;
+    color: #801818 !important;
+    border-radius: 9999px !important;
+    font-weight: 600;
+    padding: 0.55rem 1.35rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.btn-stitch-outline:hover {
+    background: #801818 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.btn-stitch-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background: #ffeadc !important;
+    border: 1px solid #dfbfbc !important;
+    color: #5f0006 !important;
+    border-radius: 9999px !important;
+    font-weight: 600;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.btn-stitch-secondary:hover {
+    background: #faddca !important;
+    color: #5f0006 !important;
+}
+
+.btn-stitch-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #ffe088 0%, #cca830 100%) !important;
+    color: #27180d !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    font-weight: 700;
+    padding: 0.75rem 2rem;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 18px rgba(115, 92, 0, 0.22);
+    transition: all 0.25s ease;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.btn-stitch-gold:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 24px rgba(115, 92, 0, 0.32);
+    color: #27180d !important;
+}
+
+.btn-stitch-pill {
+    border-radius: 9999px !important;
+}
+
+/* Quick Muhurat Pill Button */
+.stitch-muhurat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.85rem;
+    height: 36px;
+    max-height: 36px;
+    border-radius: 9999px;
+    background: #fff6ee;
+    border: 1px solid #dfbfbc;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #801818;
+    text-decoration: none !important;
+    cursor: pointer;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(128, 24, 24, 0.05);
+}
+
+.stitch-muhurat-pill:hover {
+    background: #ffeadc;
+    border-color: #cca830;
+    color: #5f0006;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(128, 24, 24, 0.1);
+}
+
+/* User Account Profile Pill & Dropdown */
+.stitch-user-dropdown {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.stitch-user-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.3rem 0.75rem 0.3rem 0.35rem;
+    border-radius: 9999px;
+    background: #fff6ee;
+    border: 1px solid #dfbfbc !important;
+    color: #58413f;
+    font-size: 0.85rem;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    height: 38px;
+}
+
+.stitch-user-btn:hover, .stitch-user-btn:focus {
+    background: #ffeadc;
+    border-color: #801818 !important;
+    color: #5f0006;
+}
+
+.stitch-user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #801818 0%, #5f0006 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-serif);
+    box-shadow: 0 1px 4px rgba(128, 24, 24, 0.25);
+    flex-shrink: 0;
+}
+
+.stitch-user-name {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #58413f;
+    white-space: nowrap;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.stitch-user-caret {
+    font-size: 10px;
+    color: #801818;
+    margin-left: 2px;
+    transition: transform 0.2s ease;
+}
+
+.stitch-user-dropdown.show .stitch-user-caret {
+    transform: rotate(180deg);
+}
+
+.stitch-user-menu {
+    border: 1px solid #dfbfbc !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 12px 32px rgba(128, 24, 24, 0.15) !important;
+    background: #ffffff;
+    min-width: 220px;
+    margin-top: 6px;
+    z-index: 1050;
+}
+
+/* Round Icon Button */
+.stitch-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #58413f;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0 !important;
+}
+
+.stitch-icon-btn:hover {
+    background: #ffeadc;
+    color: #5f0006;
+}
+
+/* ==========================================================================
+   CARDS & CONTAINERS
+   ========================================================================== */
+.stitch-card {
+    background: #ffffff;
+    border: 1px solid rgba(223, 191, 188, 0.6);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(128, 24, 24, 0.04);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.stitch-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(128, 24, 24, 0.09);
+    border-color: rgba(204, 168, 48, 0.6);
+}
+
+.stitch-pillar-card {
+    background: #ffffff;
+    border: 1px solid rgba(223, 191, 188, 0.6);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(128, 24, 24, 0.03);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.stitch-pillar-card:hover {
+    box-shadow: 0 8px 22px rgba(128, 24, 24, 0.08);
+}
+
+.stitch-pillar-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    background: #ffeadc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #801818;
+    flex-shrink: 0;
+}
+
+/* Service Preview Circle Frame */
+.stitch-service-img-wrap {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #dfbfbc;
+    padding: 3px;
+    background: #fff8f5;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.3s ease;
+}
+
+.stitch-card:hover .stitch-service-img-wrap {
+    border-color: #cca830;
+}
+
+.stitch-service-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.4s ease;
+}
+
+.stitch-card:hover .stitch-service-img {
+    transform: scale(1.08);
+}
+
+/* Pandit Image Box */
+.stitch-pandit-img-box {
+    width: 100%;
+    height: 210px;
+    border-radius: 0.85rem;
+    overflow: hidden;
+    background: #faddca;
+    position: relative;
+}
+
+.stitch-pandit-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.stitch-card:hover .stitch-pandit-img {
+    transform: scale(1.05);
+}
+
+/* Availability Badges */
+.badge-available-today {
+    background: #d1fae5;
+    color: #065f46;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pulse-dot-green {
+    width: 7px;
+    height: 7px;
+    background: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.badge-slots-busy {
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-booking-week {
+    background: #dbeafe;
+    color: #1e40af;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ==========================================================================
+   FORMS & INPUTS
+   ========================================================================== */
+.stitch-form-control {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-size: 0.925rem;
+    border-radius: 0.75rem;
+    border: 1px solid #dfbfbc;
+    background-color: #ffffff;
+    color: #27180d;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+}
+
+.stitch-form-control:focus {
+    border-color: #801818;
+    box-shadow: 0 0 0 3px rgba(128, 24, 24, 0.12);
+}
+
+.stitch-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #58413f;
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+/* ==========================================================================
+   FOOTER (STITCH REPLICATION)
+   ========================================================================== */
+.stitch-footer {
+    width: 100%;
+    background: #ffffff;
+    border-top: 1px solid rgba(223, 191, 188, 0.5);
+    box-shadow: 0 -8px 24px -4px rgba(128, 24, 24, 0.04);
+    margin-top: auto;
+}
+
+.stitch-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1.25rem 2rem;
+}
+
+.stitch-footer-title {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #27180d;
+    margin-bottom: 1rem;
+}
+
+.stitch-footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.stitch-footer-link {
+    color: #58413f;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.stitch-footer-link:hover {
+    color: #5f0006;
+}
+
+.stitch-footer-bottom {
+    padding-top: 2rem;
+    margin-top: 3rem;
+    border-top: 1px solid rgba(223, 191, 188, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: #58413f;
+}
+
+@media (min-width: 768px) {
+    .stitch-footer-bottom {
+        flex-direction: row;
+    }
+}
+
+/* ==========================================================================
+   MODALS (STITCH REPLICATION)
+   ========================================================================== */
+.stitch-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1060;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.stitch-modal-overlay.active {
+    display: flex !important;
+}
+
+.stitch-modal-card {
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    background: #ffffff;
+    border: 1px solid #dfbfbc;
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    margin: 2rem auto;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.stitch-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #801818 0%, #5f0006 100%);
+    color: #ffffff;
+}
+
+.stitch-modal-close {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 1.2rem;
+}
+
+.stitch-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.stitch-modal-body {
+    padding: 1.5rem;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+/* ==========================================================================
+   MOBILE MENU DRAWER
+   ========================================================================== */
+.stitch-mobile-drawer {
+    display: none;
+    background: #fff8f5;
+    border-bottom: 1px solid rgba(223, 191, 188, 0.5);
+    padding: 1.25rem;
+    box-shadow: 0 10px 25px rgba(128, 24, 24, 0.08);
+}
+
+.stitch-mobile-drawer.active {
+    display: block !important;
+}
+
+.stitch-mobile-link {
+    display: block;
+    padding: 0.6rem 0;
+    color: #58413f;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(223, 191, 188, 0.2);
+}
+
+.stitch-mobile-link:hover, .stitch-mobile-link.active {
+    color: #5f0006;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   ADMIN PAGES STYLING INTEGRATION
+   ========================================================================== */
+.admin-badge-pill {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-weight: 600;
+}
+
+.admin-table {
+    border-radius: 0.85rem;
+    overflow: hidden;
+    border: 1px solid #dfbfbc !important;
+}
+
+.admin-table thead th {
+    background: #ffeadc !important;
+    color: #5f0006 !important;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-bottom: 1px solid #dfbfbc !important;
+    padding: 0.85rem 1rem;
+}
+
+.admin-table tbody td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f2e3cf;
+    font-size: 0.875rem;
+}
+
+/* Category Filter Pills */
+.filter-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    max-height: 38px;
+    padding: 0 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #dfbfbc;
+    background: #ffeadc;
+    color: #58413f;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    white-space: nowrap;
+    align-self: center;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.filter-pill:hover {
+    color: #5f0006;
+    background: #ffe3d0;
+    border-color: #cca830;
+}
+
+.filter-pill.active {
+    background: #801818 !important;
+    color: #ffffff !important;
+    border-color: #801818 !important;
+    box-shadow: 0 2px 8px rgba(128, 24, 24, 0.2);
+}
+
+/* Utility Animations */
+.hover-elevate {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.hover-elevate:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(128, 24, 24, 0.08) !important;
+}
+
+/* ==========================================================================
+   ADMIN MANAGEMENT VIEWS
+   ========================================================================== */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    color: #27180d;
+    margin-bottom: 0.25rem;
+}
+
+.admin-header p {
+    color: #58413f;
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+.admin-management-card {
+    background: #ffffff;
+    border: 1px solid rgba(223, 191, 188, 0.6);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    box-shadow: 0 2px 10px rgba(128, 24, 24, 0.04);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-management-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(128, 24, 24, 0.08);
+    border-color: rgba(204, 168, 48, 0.6);
+}
+
+.admin-management-card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #27180d;
+    margin-bottom: 0.75rem;
+}
+
+.admin-management-card p {
+    margin-bottom: 0.4rem;
+    font-size: 0.875rem;
+    color: #58413f;
+}
+
+.management-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    background: #ffeadc;
+    color: #801818;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-bookings, .empty-state-box {
+    background: #ffffff;
+    border: 1px solid #dfbfbc;
+    border-radius: 1.25rem;
+    padding: 3.5rem 1.5rem;
+    margin: 2rem 0;
+    box-shadow: 0 2px 10px rgba(128, 24, 24, 0.04);
+}
+
+.empty-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #ffeadc;
+    color: #801818;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}

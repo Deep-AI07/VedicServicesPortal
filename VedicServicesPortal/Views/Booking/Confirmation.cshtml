@@ -1,0 +1,185 @@
+@model VedicServicesPortal.ViewModels.BookingConfirmationViewModel
+
+@{
+    ViewData["Title"] = "Sacred Booking Confirmed";
+}
+
+<div class="container py-5" style="max-width: 900px;">
+
+    <!-- MAIN CONFIRMATION CARD -->
+    <div class="stitch-card shadow-2xl overflow-hidden mb-5">
+        <!-- HEADER -->
+        <div class="text-center py-5 px-4 position-relative"
+             style="background: linear-gradient(135deg, #801818 0%, #5f0006 100%); color: #fff;">
+            <div class="mandala-watermark position-absolute w-100 h-100" style="inset: 0; opacity: 0.15; pointer-events: none;"></div>
+
+            <div class="position-relative" style="z-index: 1;">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle shadow mb-3"
+                     style="width: 72px; height: 72px; font-size: 34px; color: #059669; border: 2px solid #a7f3d0;">
+                    ✓
+                </div>
+                <h1 class="display-6 fw-bold mb-2 font-serif text-white">
+                    Sacred Ceremony Confirmed!
+                </h1>
+                <p class="mx-auto mb-0" style="max-width: 540px; color: #ffdad6; font-size: 0.95rem;">
+                    Your Vedic ceremony booking has been consecrated into our portal. Divine blessings and auspicious vibrations await you.
+                </p>
+            </div>
+        </div>
+
+        <div class="p-4 p-md-5 bg-white">
+            <!-- BOOKING ID BANNER -->
+            <div class="text-center p-4 rounded-4 mb-5 border border-sacred"
+                 style="background: linear-gradient(135deg, #fff9f0 0%, #ffeadc 100%);">
+                <span class="small fw-bold text-saffron text-uppercase d-block mb-1" style="letter-spacing: 1px;">
+                    Official Booking Reference Number
+                </span>
+                <h2 class="display-5 fw-bold font-serif text-primary-maroon mb-1">
+                    #VEDA-@Model.Booking.BookingId
+                </h2>
+                <div class="d-flex justify-content-center gap-2 align-items-center mt-2 flex-wrap">
+                    <span class="badge rounded-pill px-3 py-1 bg-success text-white small fw-bold">
+                        ● @Model.Booking.Status
+                    </span>
+                    @if (Model.Booking.PaymentMethod == "UPI")
+                    {
+                        <span class="badge rounded-pill px-3 py-1 bg-primary text-white small fw-bold">
+                            📱 UPI Payment (Verified)
+                        </span>
+                    }
+                    else if (Model.Booking.PaymentMethod == "Card")
+                    {
+                        <span class="badge rounded-pill px-3 py-1 bg-dark text-white small fw-bold">
+                            💳 Card Payment (Authorized)
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge rounded-pill px-3 py-1 bg-warning text-dark small fw-bold">
+                            🪔 Cash on Completion (Pay After Puja)
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <!-- 2x2 DETAIL TILES -->
+            <div class="row g-4 mb-5">
+                <!-- 1. SERVICE DETAILS -->
+                <div class="col-md-6">
+                    <div class="p-4 rounded-4 bg-sacred-low border border-sacred h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="fs-5">🪔</span>
+                            <h3 class="fs-6 fw-bold text-dark font-serif mb-0">Ceremony Details</h3>
+                        </div>
+                        <div class="small text-muted-sacred">
+                            <p class="mb-1"><strong class="text-dark">Service:</strong> @Model.Service.ServiceName</p>
+                            <p class="mb-1 text-truncate"><strong class="text-dark">Overview:</strong> @Model.Service.Description</p>
+                            <p class="mb-0"><strong class="text-dark">Dakshina:</strong> <span class="text-primary-maroon fw-bold">₹@Model.Service.Price.ToString("N0")</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. PANDIT DETAILS -->
+                <div class="col-md-6">
+                    <div class="p-4 rounded-4 bg-sacred-low border border-sacred h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="fs-5">🧘</span>
+                            <h3 class="fs-6 fw-bold text-dark font-serif mb-0">Assigned Vedic Acharya</h3>
+                        </div>
+                        <div class="small text-muted-sacred">
+                            <p class="mb-1"><strong class="text-dark">Name:</strong> @Model.Pandit.Name</p>
+                            <p class="mb-1"><strong class="text-dark">Specialization:</strong> @Model.Pandit.Specialization</p>
+                            <p class="mb-0"><strong class="text-dark">Contact:</strong> @Model.Pandit.Mobile</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. MUHURAT TIME SLOT -->
+                <div class="col-md-6">
+                    <div class="p-4 rounded-4 bg-sacred-low border border-sacred h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="fs-5">📅</span>
+                            <h3 class="fs-6 fw-bold text-dark font-serif mb-0">Scheduled Muhurat</h3>
+                        </div>
+                        <div class="small text-muted-sacred">
+                            <p class="mb-1"><strong class="text-dark">Auspicious Date:</strong> @Model.Slot.Date.ToString("dd-MM-yyyy")</p>
+                            <p class="mb-0"><strong class="text-dark">Muhurat Time:</strong> @Model.Slot.StartTime - @Model.Slot.EndTime</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. SERVICE ADDRESS -->
+                <div class="col-md-6">
+                    <div class="p-4 rounded-4 bg-sacred-low border border-sacred h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="fs-5">📍</span>
+                            <h3 class="fs-6 fw-bold text-dark font-serif mb-0">Ceremony Address</h3>
+                        </div>
+                        <div class="small text-muted-sacred">
+                            <p class="mb-0">@Model.Booking.Address</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. PAYMENT METHOD & DAKSHINA -->
+                <div class="col-12">
+                    <div class="p-4 rounded-4 bg-sacred-low border border-sacred h-100 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-white p-3 shadow-sm border border-sacred d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                                <span class="fs-4">
+                                    @(Model.Booking.PaymentMethod == "UPI" ? "📱" : Model.Booking.PaymentMethod == "Card" ? "💳" : "🪔")
+                                </span>
+                            </div>
+                            <div>
+                                <h3 class="fs-6 fw-bold text-dark font-serif mb-1">Payment Method &amp; Dakshina Settlement</h3>
+                                <p class="small text-muted-sacred mb-0">
+                                    Chosen Mode:
+                                    <strong class="text-dark">
+                                        @(Model.Booking.PaymentMethod == "UPI" ? "UPI with Dynamic QR" : Model.Booking.PaymentMethod == "Card" ? "Debit / Credit Card" : "Cash on Completion (In-Person Dakshina)")
+                                    </strong>
+                                    — @(Model.Booking.PaymentMethod == "UPI" || Model.Booking.PaymentMethod == "Card" ? "Sacred dakshina payment received and verified." : "Pay sacred dakshina directly in cash to the Acharya upon Vidhi completion.")
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-md-end text-center">
+                            <span class="small text-muted-sacred d-block">Total Consecration Dakshina</span>
+                            <span class="fs-4 fw-bold text-primary-maroon font-serif">₹@Model.Booking.TotalAmount.ToString("N0")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WHAT HAPPENS NEXT -->
+            <div class="p-4 rounded-4 bg-sacred-container border border-sacred mb-5">
+                <h4 class="fs-6 fw-bold text-deep-maroon font-serif mb-2 text-uppercase">
+                    🌺 Next Steps &amp; Sacred Preparation:
+                </h4>
+                <ul class="small text-muted-sacred mb-0 ps-3">
+                    <li class="mb-1">Our Acharya desk will coordinate with you via phone/WhatsApp prior to the ceremony date.</li>
+                    <li class="mb-1">All essential puja samagri (havan samidha, sacred grass, Gangajal, pure ghee) is brought by the Pandit.</li>
+                    <li>Please keep a clean space facing East or North-East prepared with a small mat for the Yajman.</li>
+                </ul>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a asp-controller="Booking" asp-action="Invoice" asp-route-id="@Model.Booking.BookingId" class="btn btn-outline-primary py-3 px-4 shadow-sm fw-bold d-inline-flex align-items-center gap-2 rounded-pill" target="_blank">
+                    <span>🖨️</span>
+                    <span>Print &amp; View Invoice</span>
+                </a>
+                <a asp-controller="Booking" asp-action="Invoice" asp-route-id="@Model.Booking.BookingId" asp-route-download="true" class="btn btn-success py-3 px-4 shadow-sm fw-bold d-inline-flex align-items-center gap-2 rounded-pill" target="_blank">
+                    <span>⬇️</span>
+                    <span>Download PDF Invoice</span>
+                </a>
+                <a asp-controller="Booking" asp-action="MyBookings" class="btn-stitch-primary py-3 px-4 shadow-md">
+                    <span>View in My Bookings</span>
+                    <span>→</span>
+                </a>
+                <a asp-controller="Service" asp-action="Index" class="btn-stitch-secondary py-3 px-3">
+                    🪔 Browse Rituals
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>

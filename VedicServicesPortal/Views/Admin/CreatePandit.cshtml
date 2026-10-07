@@ -1,0 +1,178 @@
+@model VedicServicesPortal.Models.Pandit
+
+@{
+    ViewData["Title"] = "Add Pandit";
+}
+
+<div class="container mt-5 mb-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="account-card">
+
+                <div class="account-icon">
+                    🧘
+                </div>
+
+                <h1>
+                    Add New Pandit
+                </h1>
+
+                <p class="account-subtitle">
+                    Enter Pandit information.
+                </p>
+
+
+                <form asp-action="CreatePandit"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3">
+                    </div>
+
+
+                    <div class="form-section">
+
+                        <label asp-for="Name"
+                               class="form-label">
+                            Pandit Name
+                        </label>
+
+                        <input asp-for="Name"
+                               class="form-control"
+                               placeholder="Enter Pandit name" />
+
+                        <span asp-validation-for="Name"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <div class="form-section">
+
+                        <label asp-for="Mobile"
+                               class="form-label">
+                            Mobile Number
+                        </label>
+
+                        <input asp-for="Mobile"
+                               class="form-control"
+                               placeholder="Enter mobile number" />
+
+                        <span asp-validation-for="Mobile"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <div class="form-section">
+
+                        <label asp-for="Email"
+                               class="form-label">
+                            Email
+                        </label>
+
+                        <input asp-for="Email"
+                               type="email"
+                               class="form-control"
+                               placeholder="Enter email" />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <div class="form-section">
+
+                        <label asp-for="Experience"
+                               class="form-label">
+                            Experience (Years)
+                        </label>
+
+                        <input asp-for="Experience"
+                               type="number"
+                               min="0"
+                               class="form-control"
+                               placeholder="Enter experience" />
+
+                        <span asp-validation-for="Experience"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <div class="form-section">
+
+                        <label asp-for="Specialization"
+                               class="form-label">
+                            Specialization
+                        </label>
+
+                        <input asp-for="Specialization"
+                               class="form-control"
+                               placeholder="Example: Ganesh Puja" />
+
+                        <span asp-validation-for="Specialization"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <div class="form-check mb-4">
+
+                        <input asp-for="IsAvailable"
+                               class="form-check-input" />
+
+                        <label asp-for="IsAvailable"
+                               class="form-check-label">
+
+                            Pandit is Available
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary flex-grow-1">
+
+                            Add Pandit
+
+                        </button>
+
+                        <a asp-action="Pandits"
+                           class="btn btn-secondary">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

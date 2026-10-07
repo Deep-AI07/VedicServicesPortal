@@ -1,0 +1,173 @@
+@model VedicServicesPortal.Models.TimeSlot
+
+@{
+    ViewData["Title"] = "Edit Time Slot";
+}
+
+<div class="container mt-5 mb-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7">
+
+            <div class="account-card">
+
+                <div class="account-icon">
+                    ✏️
+                </div>
+
+                <h1>
+                    Edit Time Slot
+                </h1>
+
+                <p class="account-subtitle">
+                    Update the Pandit time slot.
+                </p>
+
+
+                <form asp-action="EditTimeSlot"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           asp-for="SlotId" />
+
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3">
+                    </div>
+
+
+                    <!-- PANDIT -->
+
+                    <div class="form-section">
+
+                        <label asp-for="PanditId"
+                               class="form-label">
+
+                            Select Pandit
+
+                        </label>
+
+                        <select asp-for="PanditId"
+                                class="form-select">
+
+                            @foreach (var pandit in ViewBag.Pandits)
+                            {
+                                <option value="@pandit.PanditId">
+
+                                    @pandit.Name
+
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DATE -->
+
+                    <div class="form-section">
+
+                        <label asp-for="Date"
+                               class="form-label">
+
+                            Date
+
+                        </label>
+
+                        <input asp-for="Date"
+                               type="date"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <!-- START TIME -->
+
+                    <div class="form-section">
+
+                        <label asp-for="StartTime"
+                               class="form-label">
+
+                            Start Time
+
+                        </label>
+
+                        <input asp-for="StartTime"
+                               type="time"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <!-- END TIME -->
+
+                    <div class="form-section">
+
+                        <label asp-for="EndTime"
+                               class="form-label">
+
+                            End Time
+
+                        </label>
+
+                        <input asp-for="EndTime"
+                               type="time"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <!-- BOOKED -->
+
+                    <div class="form-check mb-4">
+
+                        <input asp-for="IsBooked"
+                               class="form-check-input" />
+
+                        <label asp-for="IsBooked"
+                               class="form-check-label">
+
+                            Slot is Booked
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary flex-grow-1">
+
+                            Save Changes
+
+                        </button>
+
+                        <a asp-action="TimeSlots"
+                           class="btn btn-secondary">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}
