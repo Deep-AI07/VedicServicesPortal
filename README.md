@@ -1,90 +1,69 @@
-# Gym Application
+# Vedic Services Portal
 
-A gym and fitness application project intended to support a modern digital gym experience.
+An online pooja booking portal designed to help users explore and request religious services through a digital platform.
 
 ## Overview
 
-This repository contains an Android application project. The project uses Gradle and Kotlin-based Gradle build configuration.
+Vedic Services Portal is a web application project focused on making pooja-service booking more convenient. The repository contains a Visual Studio solution for the `VedicServicesPortal` application.
 
 ## Features
 
-The application is intended to be a foundation for gym-related functionality. Document the features that are currently implemented here, such as:
+- Online pooja-service booking concept
+- Web-based interface for accessing services
+- Centralized project structure for further development
 
-- Member or user profiles
-- Workout and exercise tracking
-- Fitness plans
-- Gym information and services
-
-> Keep only the features that are actually implemented in the app.
+> Note: Update this section to reflect the exact booking, authentication, payment, and admin features implemented in the current codebase.
 
 ## Tech Stack
 
-- **Platform:** Android
-- **Build system:** Gradle
-- **Build configuration:** Kotlin DSL (`.gradle.kts`)
+- **Language / Framework:** C# and .NET (Visual Studio solution)
+- **Project format:** `.sln` / `.csproj`
 
-Check the files in `app/` and `app/build.gradle.kts` to confirm the exact programming language, SDK versions, and dependencies.
+Check `VedicServicesPortal/VedicServicesPortal.csproj` for the exact target framework and package dependencies.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Android Studio
-- A compatible JDK
-- Android SDK components required by the project
-- Internet access for the initial Gradle dependency download
+- Windows
+- Visual Studio with the workload required by the project's target framework
+- The .NET SDK or .NET Framework targeting pack required by the project
 
 ### Run Locally
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/Deep-AI07/Gym.git
+   git clone https://github.com/Deep-AI07/VedicServicesPortal.git
    ```
 
-2. Open Android Studio.
-3. Select **Open** and choose the cloned `Gym` project folder.
-4. Allow Gradle sync to complete.
-5. Configure an Android emulator or connect an Android device with developer options enabled.
-6. Select the `app` run configuration and click **Run**.
+2. Open `VedicServicesPortal.sln` in Visual Studio.
+3. Restore NuGet packages if prompted.
+4. Review the project's configuration and connection strings before running.
+5. Select `VedicServicesPortal` as the startup project.
+6. Run the application using Visual Studio.
 
-Alternatively, on Windows you can try building from the project root:
+## Configuration
 
-```bat
-gradlew.bat assembleDebug
-```
-
-On macOS or Linux:
-
-```bash
-./gradlew assembleDebug
-```
+Before running the application, review the configuration files for database connection strings, credentials, and other environment-specific settings. Do not commit passwords, API keys, or production secrets to GitHub.
 
 ## Project Structure
 
 ```text
-Gym/
-├── app/                  # Android application module
-├── gradle/               # Gradle wrapper configuration
-├── build.gradle.kts      # Root build configuration
-├── settings.gradle.kts   # Project/module settings
-├── gradle.properties     # Gradle properties
-├── gradlew               # Gradle wrapper (macOS/Linux)
-└── gradlew.bat           # Gradle wrapper (Windows)
+VedicServicesPortal/
+├── VedicServicesPortal.sln
+└── VedicServicesPortal/
+    └── VedicServicesPortal.csproj
 ```
 
-## Development Notes
-
-- Keep signing keys, passwords, API keys, and private configuration out of source control.
-- Test changes on an emulator and, where possible, a physical device.
-- Update this README whenever app features or setup steps change.
+The application folder may contain additional source, views, assets, and configuration files.
 
 ## Contributing
 
 1. Fork the repository.
 2. Create a feature branch.
 3. Make and test your changes.
-4. Submit a pull request describing the change.
+4. Submit a pull request with a clear description.
 
 ## License
 
